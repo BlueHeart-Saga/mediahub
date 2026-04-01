@@ -11,6 +11,8 @@ frontend/build/
 backend/__pycache__/
 backend/*.pyc
 backend/.venv/
+__pycache__/
+*.pyc
 
 # =========================
 # ENV FILES (VERY IMPORTANT)

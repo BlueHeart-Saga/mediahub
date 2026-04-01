@@ -37,6 +37,6 @@ jobs:
       - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
-          app-name: mediahub-backend
+          app-name: mediahub-backend-docker
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND }}
           images: blueheartsaga/mediahub-backend:latest
