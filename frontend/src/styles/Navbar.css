@@ -1,0 +1,133 @@
+/* ============================= */
+/* Navbar Container */
+/* ============================= */
+
+.ph-navbar {
+  height: 58px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* ============================= */
+/* Left Section */
+/* ============================= */
+
+.ph-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ph-navbar-search {
+  width: 240px;
+  height: 34px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+/* ============================= */
+/* Right Section */
+/* ============================= */
+
+.ph-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ============================= */
+/* User Section */
+/* ============================= */
+
+.ph-navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Profile Avatar Image */
+
+.ph-navbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* Fallback Initial Avatar */
+
+.ph-navbar-avatar--fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-weight: 600;
+  font-size: 14px;
+
+  flex-shrink: 0;
+}
+
+/* Username */
+
+.ph-navbar-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* ============================= */
+/* Logout Button */
+/* ============================= */
+
+.ph-navbar-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: none;
+
+  background: #111827;
+  color: white;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ph-navbar-btn:hover {
+  background: #000000;
+}
+
+/* ============================= */
+/* Responsive */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .ph-navbar-search {
+    width: 160px;
+  }
+
+  .ph-navbar-username {
+    display: none; /* Hide name on small screens */
+  }
+}

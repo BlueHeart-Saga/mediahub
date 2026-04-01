@@ -1,0 +1,42 @@
+name: Backend CI/CD (Mediahub Docker)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2️⃣ Docker Login
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3️⃣ Build Image
+      - name: Build Docker Image
+        run: |
+          docker build -t blueheartsaga/mediahub-backend:latest ./backend
+
+      # 4️⃣ Push Image
+      - name: Push Docker Image
+        run: |
+          docker push blueheartsaga/mediahub-backend:latest
+
+      # 5️⃣ Deploy to Azure Web App (Container)
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: mediahub-backend
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND }}
+          images: blueheartsaga/mediahub-backend:latest

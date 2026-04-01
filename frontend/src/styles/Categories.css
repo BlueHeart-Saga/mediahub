@@ -1,0 +1,199 @@
+/* PAGE LAYOUT */
+
+.cat-page {
+  padding: 28px;
+  background: #f3f4f6;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+
+.cat-header {
+  margin-bottom: 18px;
+}
+
+.cat-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.cat-skeleton-line {
+  margin-top: 10px;
+  height: 10px;
+  width: 120px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+/* CARD SECTIONS */
+
+.cat-card {
+  margin-top: 18px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  text-align: left;
+  transition: box-shadow 0.15s ease;
+}
+
+.cat-card:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cat-card-title {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+/* INPUTS & SELECTS */
+
+.cat-select,
+.cat-input {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.cat-select:focus,
+.cat-input:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.05);
+}
+
+/* BUTTON */
+
+.cat-button {
+  margin-top: 10px;
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.cat-button:hover {
+  background: black;
+}
+
+.cat-button:active {
+  transform: scale(0.99);
+}
+
+/* SLUG PREVIEW */
+
+.cat-slug-preview {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.cat-slug-preview span {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* CATEGORY LIST */
+
+.cat-table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  align-items: center;
+  padding: 10px 4px;
+  font-size: 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cat-table-row:last-child {
+  border-bottom: none;
+}
+
+.cat-table-row span:first-child {
+  color: #111827;
+}
+
+.cat-slug {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* DELETE BUTTON */
+
+.cat-delete-btn {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.cat-delete-btn:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+/* EMPTY STATE */
+
+.cat-empty {
+  padding: 14px 4px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* SKELETONS */
+
+.cat-skeleton-input {
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 37%,
+    #f3f4f6 63%
+  );
+  background-size: 400% 100%;
+  animation: cat-shimmer 1.2s infinite;
+}
+
+.cat-skeleton-row {
+  height: 38px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 37%,
+    #f3f4f6 63%
+  );
+  background-size: 400% 100%;
+  animation: cat-shimmer 1.2s infinite;
+}
+
+@keyframes cat-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

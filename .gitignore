@@ -1,0 +1,32 @@
+# =========================
+# FRONTEND
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# =========================
+# BACKEND
+# =========================
+backend/__pycache__/
+backend/*.pyc
+backend/.venv/
+
+# =========================
+# ENV FILES (VERY IMPORTANT)
+# =========================
+.env
+frontend/.env
+backend/.env
+
+# =========================
+# OS / EDITOR
+# =========================
+.vscode/
+.DS_Store
+Thumbs.db
+
+# =========================
+# LOGS
+# =========================
+*.log

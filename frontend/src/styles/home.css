@@ -1,0 +1,127 @@
+/* Page */
+
+.ph-home-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  font-family: Arial, sans-serif;
+}
+
+/* Card */
+
+.ph-home-card {
+  width: 100%;
+  max-width: 720px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 40px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ph-home-heading {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+.ph-home-subheading {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Header */
+
+.ph-home-header {
+  margin-bottom: 32px;
+}
+
+.ph-home-logo {
+  width: 140px;
+  height: 36px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.ph-home-title {
+  width: 280px;
+  height: 28px;
+  background: #d1d5db;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.ph-home-subtitle {
+  width: 360px;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+/* Description Skeleton */
+
+.ph-home-description {
+  margin-bottom: 36px;
+}
+
+.ph-home-description div {
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.ph-home-description div:nth-child(1) { width: 100%; }
+.ph-home-description div:nth-child(2) { width: 85%; }
+.ph-home-description div:nth-child(3) { width: 65%; }
+
+/* Actions */
+
+.ph-home-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.ph-home-link {
+  flex: 1;
+  text-decoration: none;
+}
+
+/* Buttons */
+
+.ph-home-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Secondary */
+
+.ph-home-btn-secondary {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+}
+
+.ph-home-btn-secondary:hover {
+  background: #f3f4f6;
+}
+
+/* Primary */
+
+.ph-home-btn-primary {
+  background: #111827;
+  color: white;
+  border: none;
+}
+
+.ph-home-btn-primary:hover {
+  background: black;
+}

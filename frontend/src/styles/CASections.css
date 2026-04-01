@@ -1,0 +1,150 @@
+.casec-page {
+  padding: 28px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.casec-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.casec-header-line {
+  width: 140px;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+/* Cards */
+
+.casec-card {
+  margin-top: 20px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+}
+
+.casec-card-title {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+/* Input */
+
+.casec-input {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 0 12px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.casec-input:focus {
+  outline: none;
+  border-color: #111827;
+}
+
+/* Slug */
+
+.casec-slug-preview {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.casec-slug-preview span {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Buttons */
+
+.casec-primary-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.casec-primary-btn:hover {
+  opacity: 0.95;
+}
+
+/* Table */
+
+.casec-table-head,
+.casec-table-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr auto;
+  align-items: center;
+  padding: 10px 6px;
+  font-size: 14px;
+}
+
+.casec-table-head {
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.casec-table-row {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.casec-name {
+  color: #111827;
+  font-weight: 500;
+}
+
+.casec-slug {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Delete */
+
+.casec-delete-btn {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.casec-delete-btn:hover {
+  text-decoration: underline;
+}
+
+/* Empty */
+
+.casec-empty {
+  padding: 14px 6px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Skeleton */
+
+.casec-skeleton-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr auto;
+  padding: 10px 6px;
+  gap: 12px;
+}
+
+.casec-skeleton-row div {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}

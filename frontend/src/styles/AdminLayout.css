@@ -1,0 +1,43 @@
+.ph-layout {
+  display: flex;
+  height: 98vh;
+  background: #f3f4f6;
+  overflow: hidden; /* prevents double scrollbars */
+}
+
+/* Sidebar stays full height */
+
+.ph-layout > *:first-child {
+  /* height: 100vh; */
+  flex-shrink: 0;
+}
+
+/* Main Region */
+
+.ph-layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+/* Navbar fixed behavior handled internally */
+
+.ph-layout-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+/* Optional: smoother content edges */
+
+.ph-layout-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ph-layout-content::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}

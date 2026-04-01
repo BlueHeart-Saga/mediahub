@@ -1,0 +1,75 @@
+/* Skeleton Helpers */
+
+.skeleton {
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-line {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+/* Contact Specific */
+
+.ph-contact-textarea {
+  width: 100%;
+  height: 110px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  font-family: Arial, sans-serif;
+}
+
+.ph-contact-textarea:focus {
+  border-color: #111827;
+}
+
+.ph-contact-info {
+  margin-bottom: 18px;
+}
+.ph-contact-textarea {
+  width: 100%;
+  height: 90px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+  font-family: Arial, sans-serif;
+}
+
+.ph-contact-textarea:focus {
+  border-color: #111827;
+}

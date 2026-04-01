@@ -1,0 +1,102 @@
+.cmp-page {
+  padding: 28px;
+  background: #f3f4f6;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.cmp-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.cmp-skeleton-line {
+  height: 10px;
+  width: 140px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.cmp-card {
+  margin-top: 22px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+}
+
+.cmp-card-title {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.cmp-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cmp-row input {
+  flex: 1;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0 10px;
+}
+
+.cmp-primary-btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: none;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+}
+
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cmp-table th {
+  text-align: left;
+  font-size: 13px;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 6px;
+}
+
+.cmp-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cmp-actions button {
+  margin-right: 6px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.cmp-actions .danger {
+  color: #dc2626;
+}
+
+.cmp-error {
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.cmp-empty {
+  padding: 12px;
+  font-size: 13px;
+  color: #9ca3af;
+}

@@ -1,0 +1,663 @@
+.sad-container {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Header */
+.sad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sad-header-left {
+  flex: 1;
+}
+
+.sad-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.sad-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.sad-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.sad-time-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.sad-icon-small {
+  width: 16px;
+  height: 16px;
+}
+
+/* Stats Grid */
+.sad-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sad-stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.sad-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+.sad-company-card {
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  border: none;
+}
+
+.sad-company-card .sad-stat-label,
+.sad-company-card .sad-stat-value,
+.sad-company-card .sad-stat-footer {
+  color: rgb(0, 0, 0);
+}
+
+.sad-stat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.sad-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+}
+
+.sad-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.sad-users-icon {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sad-admins-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sad-editors-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sad-sections-icon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.sad-categories-icon {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.sad-posts-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sad-published-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sad-draft-icon {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.sad-stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sad-stat-value {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.sad-stat-footer {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+}
+
+.sad-stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.sad-active-badge {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sad-inactive-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sad-pending-badge {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.sad-suspended-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sad-stat-change {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.sad-positive {
+  color: #059669;
+}
+
+/* Summary Grid */
+.sad-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sad-summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.sad-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.sad-summary-icon {
+  width: 24px;
+  height: 24px;
+  color: #3b82f6;
+}
+
+.sad-summary-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.sad-summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Progress Bars */
+.sad-progress-item {
+  margin-bottom: 0.5rem;
+}
+
+.sad-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.sad-progress-value {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sad-progress-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sad-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.sad-progress-active {
+  background: #10b981;
+}
+
+.sad-progress-pending {
+  background: #f59e0b;
+}
+
+.sad-progress-suspended {
+  background: #ef4444;
+}
+
+.sad-progress-published {
+  background: #10b981;
+}
+
+.sad-progress-draft {
+  background: #94a3b8;
+}
+
+/* Health Grid */
+.sad-health-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.sad-health-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.sad-health-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.sad-health-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Cards */
+.sad-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.sad-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.sad-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.sad-card-icon {
+  width: 20px;
+  height: 20px;
+  color: #94a3b8;
+}
+
+/* Quick Actions */
+.sad-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.sad-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.sad-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.sad-action-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.sad-action-success {
+  background: #10b981;
+  color: white;
+  border: none;
+}
+
+.sad-action-info {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.sad-action-warning {
+  background: #f59e0b;
+  color: white;
+  border: none;
+}
+
+.sad-action-secondary {
+  background: #64748b;
+  color: white;
+  border: none;
+}
+
+.sad-action-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Timeframe Selector */
+.sad-timeframe-selector {
+  display: flex;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.sad-timeframe-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: #64748b;
+}
+
+.sad-timeframe-btn:hover {
+  background: white;
+  color: #1e293b;
+}
+
+.sad-timeframe-btn.active {
+  background: white;
+  color: #3b82f6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Activity List */
+.sad-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sad-activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.sad-activity-item:hover {
+  background: #f1f5f9;
+}
+
+.sad-activity-item-content {
+  flex: 1;
+}
+
+.sad-activity-item-title {
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.sad-activity-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sad-company-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  background: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+}
+
+.sad-status-badge-small {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.sad-status-active,
+.sad-status-published {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sad-status-pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.sad-status-suspended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sad-status-draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.sad-status-deleted {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.sad-activity-item-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.sad-activity-item-author {
+  margin-left: 1rem;
+}
+
+.sad-author-name {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Empty State */
+.sad-empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* Skeleton Loading */
+.sad-skeleton-stat {
+  height: 40px;
+  width: 80px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+.sad-actions-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.sad-actions-skeleton div {
+  height: 48px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+.sad-skeleton-activity {
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.sad-skeleton-line {
+  height: 16px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.sad-skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sad-container {
+    padding: 1rem;
+  }
+
+  .sad-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sad-header-right {
+    width: 100%;
+  }
+
+  .sad-time-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sad-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sad-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sad-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sad-health-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sad-activity-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sad-activity-item-author {
+    margin-left: 0;
+  }
+}

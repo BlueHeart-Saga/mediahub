@@ -1,0 +1,307 @@
+.ia-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Header */
+.ia-header {
+  margin-bottom: 2rem;
+}
+
+.ia-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.ia-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Cards */
+.ia-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.ia-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+/* Form Grid */
+.ia-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .ia-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Filters */
+.ia-filters {
+  display: grid;
+  grid-template-columns: 200px 150px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .ia-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form Elements */
+.ia-input,
+.ia-select {
+  height: 42px;
+  padding: 0 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: white;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.ia-input:focus,
+.ia-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.ia-input:disabled,
+.ia-select:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+/* Buttons */
+.ia-btn {
+  height: 42px;
+  padding: 0 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ia-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.ia-btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.ia-btn-secondary {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+
+.ia-btn-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.ia-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Table */
+.ia-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ia-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.ia-table th {
+  text-align: left;
+  padding: 1rem;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.ia-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.ia-table tr:hover {
+  background: #f8fafc;
+}
+
+.ia-name-cell {
+  font-weight: 500;
+}
+
+/* Status Badges */
+.ia-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.ia-status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ia-status-pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.ia-status-suspended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ia-status-deleted {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Action Buttons */
+.ia-actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ia-action-btn {
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ia-action-resend {
+  background: #3b82f6;
+  color: white;
+}
+
+.ia-action-resend:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.ia-action-suspend {
+  background: #f59e0b;
+  color: white;
+}
+
+.ia-action-suspend:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.ia-action-activate {
+  background: #10b981;
+  color: white;
+}
+
+.ia-action-activate:hover:not(:disabled) {
+  background: #059669;
+}
+
+.ia-action-delete {
+  background: #ef4444;
+  color: white;
+}
+
+.ia-action-delete:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.ia-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading State */
+.ia-loading {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.ia-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.ia-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+/* Toast Customization */
+.toast-success {
+  background: #10b981 !important;
+  color: white !important;
+}
+
+.toast-error {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+.toast-warning {
+  background: #f59e0b !important;
+  color: white !important;
+}

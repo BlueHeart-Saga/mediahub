@@ -1,0 +1,124 @@
+.sec-page {
+  padding: 28px;
+}
+
+.sec-header h2 {
+  margin: 0 0 18px;
+  font-size: 22px;
+  color: #111827;
+}
+
+/* Controls */
+
+.sec-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.sec-select,
+.sec-input {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+.sec-select {
+  min-width: 240px;
+}
+
+.sec-input {
+  flex: 1;
+}
+
+.sec-select:focus,
+.sec-input:focus {
+  outline: none;
+  border-color: #111827;
+}
+
+.sec-primary-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sec-primary-btn:hover {
+  background: black;
+}
+
+/* Table */
+
+.sec-table {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sec-table-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px;
+  background: #f9fafb;
+  font-size: 13px;
+  color: #6b7280;
+  padding: 10px 14px;
+}
+
+.sec-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px;
+  padding: 10px 14px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 14px;
+  align-items: center;
+}
+
+.sec-row.skeleton div {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+.muted {
+  color: #9ca3af;
+}
+
+.sec-delete-btn {
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.sec-delete-btn:hover {
+  border-color: #111827;
+}
+
+.sec-badge {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sec-empty {
+  padding: 14px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Skeleton */
+
+.sec-skeleton-input {
+  height: 40px;
+  width: 240px;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
