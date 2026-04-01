@@ -30,7 +30,7 @@ jobs:
       # 3️⃣ Create .env
       - name: Create .env
         run: |
-          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env
+          echo "VITE_API_BASE=${{ secrets.VITE_API_BASE }}" > .env
 
       # 4️⃣ Install
       - run: npm install
