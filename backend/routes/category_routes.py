@@ -195,3 +195,47 @@ def delete_category(
     )
 
     return {"message": "Category deleted"}
+
+# ✅ BAN CATEGORY
+@router.patch("/categories/{slug}/ban")
+def ban_category(
+    slug: str, 
+    company_id: str = Query(...),
+    section_slug: str = Query(...),
+    user=Depends(get_current_user)
+):
+    cid = resolve_company_scope(user, company_id)
+    slug = normalize_slug(slug)
+    section_slug = normalize_slug(section_slug)
+
+    result = categories_collection.update_one(
+        {"company_id": cid, "section_slug": section_slug, "slug": slug, "status": {"$ne": "deleted"}},
+        {"$set": {"status": "banned", "updated_at": datetime.utcnow()}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Category not found")
+
+    return {"message": "Category banned"}
+
+# ✅ REACTIVATE CATEGORY
+@router.patch("/categories/{slug}/activate")
+def activate_category(
+    slug: str, 
+    company_id: str = Query(...),
+    section_slug: str = Query(...),
+    user=Depends(get_current_user)
+):
+    cid = resolve_company_scope(user, company_id)
+    slug = normalize_slug(slug)
+    section_slug = normalize_slug(section_slug)
+
+    result = categories_collection.update_one(
+        {"company_id": cid, "section_slug": section_slug, "slug": slug, "status": {"$ne": "deleted"}},
+        {"$set": {"status": "active", "updated_at": datetime.utcnow()}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Category not found")
+
+    return {"message": "Category activated"}

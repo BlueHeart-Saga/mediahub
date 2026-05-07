@@ -64,16 +64,19 @@ export default function ForgotPassword() {
       
       <div className="fp-card">
 
- <div
-    className="ph-login-home"
-    onClick={() => navigate("/")}
-    title="Go to Home"
-  >
-    <Home size={18} />
-  </div>
+        <div className="fp-top-row">
+          <div className="ph-login-logo"></div>
+          <div
+            className="fp-home"
+            onClick={() => navigate("/")}
+            title="Go to Home"
+          >
+            <Home size={18} />
+          </div>
+        </div>
 
-  <h2>Forgot Password</h2>
-  <p className="fp-subtext">Enter your email to receive OTP</p>
+        <h2>Forgot Password</h2>
+        <p className="fp-subtext">Enter your email to receive OTP</p>
 
         {/* Top Skeleton Decorations */}
         <div className="fp-skeleton-line"></div>

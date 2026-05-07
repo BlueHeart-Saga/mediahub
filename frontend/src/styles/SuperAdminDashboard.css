@@ -59,9 +59,27 @@
 /* Stats Grid */
 .sad-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1400px) {
+  .sad-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .sad-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sad-stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sad-stat-card {
@@ -214,9 +232,21 @@
 /* Summary Grid */
 .sad-summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .sad-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .sad-summary-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sad-summary-card {
@@ -366,8 +396,26 @@
 /* Quick Actions */
 .sad-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1400px) {
+  .sad-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .sad-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sad-actions-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sad-action-btn {
@@ -580,8 +628,26 @@
 
 .sad-actions-skeleton {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1400px) {
+  .sad-actions-skeleton {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .sad-actions-skeleton {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sad-actions-skeleton {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sad-actions-skeleton div {
@@ -660,4 +726,35 @@
   .sad-activity-item-author {
     margin-left: 0;
   }
+}
+
+/* View More Activity */
+.sad-view-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sad-view-more-btn {
+  padding: 0.75rem 2rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sad-view-more-btn:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.sad-view-more-btn:active {
+  transform: scale(0.98);
 }

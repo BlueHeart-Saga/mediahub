@@ -194,7 +194,7 @@ def create_company_admin(payload: dict, user=Depends(get_current_user)):
         message = "Company Admin invited successfully"
 
     # Send invitation email WITH NAME
-    send_email(
+    if not send_email(
         to_email=email,
         subject=f"{company['name']} Admin Access",
         body=build_company_admin_invite_email(
@@ -203,7 +203,12 @@ def create_company_admin(payload: dict, user=Depends(get_current_user)):
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to send invitation email to {email}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email"
+        )
 
     logger.info(f"Company admin invited: {email} to company {company_id}")
 
@@ -452,7 +457,7 @@ def resend_admin_invite(admin_id: str, user=Depends(get_current_user)):
     company = companies_collection.find_one({"company_id": target["company_id"]})
 
     # Send invitation email
-    send_email(
+    if not send_email(
         to_email=target["email"],
         subject=f"{company['name']} Admin Access",
         body=build_company_admin_invite_email(
@@ -461,7 +466,12 @@ def resend_admin_invite(admin_id: str, user=Depends(get_current_user)):
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to resend invitation to {target['email']}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email"
+        )
 
     logger.info(f"Invitation resent to: {target['email']}")
 
@@ -557,7 +567,7 @@ def create_editor(payload: dict, user=Depends(get_current_user)):
         message = "Editor invited successfully"
 
     # Send invitation email WITH NAME
-    send_email(
+    if not send_email(
         to_email=email,
         subject=f"{company['name']} Editor Access",
         body=build_editor_invite_email(
@@ -566,7 +576,12 @@ def create_editor(payload: dict, user=Depends(get_current_user)):
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to send invitation email to {email}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email"
+        )
 
     logger.info(f"Editor invited: {email} to company {company_id}")
 
@@ -851,7 +866,7 @@ def resend_editor_invite(editor_id: str, user=Depends(get_current_user)):
     company = companies_collection.find_one({"company_id": target["company_id"]})
 
     # Send invitation email
-    send_email(
+    if not send_email(
         to_email=target["email"],
         subject=f"{company['name']} Editor Access",
         body=build_editor_invite_email(
@@ -860,7 +875,12 @@ def resend_editor_invite(editor_id: str, user=Depends(get_current_user)):
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to resend invitation to editor {target['email']}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email"
+        )
 
     logger.info(f"Invitation resent to editor: {target['email']}")
 
@@ -1159,7 +1179,9 @@ def resend_invite(user_id: str, user=Depends(get_current_user)):
         )
         subject = f"{company['name']} Editor Access"
 
-    send_email(target["email"], subject, body)
+    if not send_email(target["email"], subject, body):
+        logger.error(f"Failed to send invitation email to {target['email']}")
+        # Don't raise here as it might be part of a loop or already partially updated
 
     # Fix the KeyError here too
     user_email = user.get("email", "unknown")

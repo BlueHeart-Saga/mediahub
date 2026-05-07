@@ -75,7 +75,14 @@ export default function PostViewModal({ isOpen, onClose, post, userRole, onEdit,
     try {
       setLoading(true);
       const res = await apiFetch(`/content/${post.id || post._id}`);
-      setFullPost(res?.item || res);
+      const fetchedPost = res?.item || res;
+      
+      // Preserve company_name from initial post if not in response
+      if (!fetchedPost.company_name && post.company_name) {
+        fetchedPost.company_name = post.company_name;
+      }
+      
+      setFullPost(fetchedPost);
     } catch (error) {
       console.error("Failed to load post details:", error);
       toast.error("Failed to load post details");
@@ -220,7 +227,26 @@ export default function PostViewModal({ isOpen, onClose, post, userRole, onEdit,
       case 'text':
         return (
           <div className="mb-4">
-            <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{block.data.value}</p>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+              {block.data.value.split(/(\[.*?\]\(.*?\))/).map((part, i) => {
+                const match = part.match(/\[(.*?)\]\((.*?)\)/);
+                if (match) {
+                  return (
+                    <a 
+                      key={i} 
+                      href={match[2]} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-blue-600 hover:underline font-medium"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {match[1]}
+                    </a>
+                  );
+                }
+                return part;
+              })}
+            </p>
           </div>
         );
 
@@ -561,9 +587,9 @@ export default function PostViewModal({ isOpen, onClose, post, userRole, onEdit,
 
                 {/* Company/Section/Category Info */}
                 <div className="flex flex-wrap gap-2">
-                  {fullPost.company_name && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#111827] text-white rounded-full text-xs">
-                      <Building2 size={12} />
+                  {isSuperAdmin && fullPost.company_name && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold uppercase tracking-wider border border-indigo-100 shadow-sm">
+                      <Building2 size={13} className="text-indigo-600" />
                       {fullPost.company_name}
                     </span>
                   )}

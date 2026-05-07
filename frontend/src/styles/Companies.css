@@ -100,3 +100,43 @@
   font-size: 13px;
   color: #9ca3af;
 }
+
+/* Unique Action Buttons Styles (V2) */
+.cmp-actions-v2 {
+  padding: 8px 12px !important;
+  text-align: right;
+}
+
+.cmp-v2-flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cmp-v2-action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cmp-v2-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cmp-v2-edit:hover { color: #7c3aed; border-color: #ddd6fe; background: #f5f3ff; }
+.cmp-v2-suspend:hover { color: #d97706; border-color: #fef3c7; background: #fffbeb; }
+.cmp-v2-activate:hover { color: #059669; border-color: #d1fae5; background: #ecfdf5; }
+.cmp-v2-archive:hover { color: #475569; border-color: #e2e8f0; background: #f8fafc; }
+.cmp-v2-danger:hover { color: #dc2626; border-color: #fee2e2; background: #fef2f2; }
+.cmp-v2-confirm:hover { color: #059669; border-color: #d1fae5; background: #ecfdf5; }
+.cmp-v2-cancel:hover { color: #dc2626; border-color: #fee2e2; background: #fef2f2; }

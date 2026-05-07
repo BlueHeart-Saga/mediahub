@@ -1,3 +1,123 @@
+/* Shared Auth/Login UI bases */
+.ph-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+}
+
+.ph-login-card {
+  width: 440px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ph-login-logo {
+  width: 100px;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+.ph-login-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.ph-login-home {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: #6b7280;
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.ph-login-home:hover {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.ph-login-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.ph-login-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 0;
+}
+
+.ph-login-field {
+  margin-bottom: 20px;
+}
+
+.ph-login-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.ph-login-field input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.ph-login-field input:focus {
+  border-color: #111827;
+  outline: none;
+}
+
+.ph-login-btn {
+  width: 100%;
+  padding: 12px;
+  background: #111827;
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.ph-login-btn:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.ph-login-footer {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ph-login-footer div {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
 /* Skeleton Helpers */
 
 .skeleton {

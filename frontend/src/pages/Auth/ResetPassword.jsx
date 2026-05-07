@@ -83,13 +83,16 @@ export default function ResetPassword() {
   return (
     <div className="rp-page">
       <div className="rp-card">
-         <div
-    className="ph-login-home"
-    onClick={() => navigate("/")}
-    title="Go to Home"
-  >
-    <Home size={18} />
-  </div>
+        <div className="rp-top-row">
+          <div className="ph-login-logo"></div>
+          <div
+            className="ph-login-home"
+            onClick={() => navigate("/")}
+            title="Go to Home"
+          >
+            <Home size={18} />
+          </div>
+        </div>
 
         <h2>Reset Password</h2>
         <p className="rp-subtext">Enter OTP and new password</p>

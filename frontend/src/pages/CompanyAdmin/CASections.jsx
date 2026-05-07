@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../../api/client";
 import toast from "react-hot-toast";
 import "../../styles/CASections.css";
+import { 
+  Edit3, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Trash2, 
+  Layout, 
+  Hash,
+  AlertTriangle,
+  Plus
+} from "lucide-react";
 
 const generateSlug = (value) =>
   value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
@@ -56,7 +66,7 @@ export default function CASections() {
 
   const handleDelete = async (slug) => {
     try {
-      const res = await apiFetch(`/sections/${slug}?company_id=`, {
+      const res = await apiFetch(`/sections/${slug}`, {
         method: "DELETE",
       });
 
@@ -70,6 +80,32 @@ export default function CASections() {
     } catch (err) {
       console.error(err);
       toast.error("Delete failed");
+    }
+  };
+
+  const handleBan = async (slug) => {
+    try {
+      await apiFetch(`/sections/${slug}/ban`, {
+        method: "PATCH",
+      });
+      toast.success("Section banned");
+      loadSections();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to ban section");
+    }
+  };
+
+  const handleActivate = async (slug) => {
+    try {
+      await apiFetch(`/sections/${slug}/activate`, {
+        method: "PATCH",
+      });
+      toast.success("Section activated");
+      loadSections();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to activate section");
     }
   };
 
@@ -109,37 +145,66 @@ export default function CASections() {
         <div className="casec-card-title">Existing Sections</div>
 
         {loading ? (
-          <>
-            <SkeletonRow />
-            <SkeletonRow />
-          </>
+          <div className="casec-loading">Loading sections...</div>
         ) : sections.length ? (
-          <div className="casec-table">
-            <div className="casec-table-head">
-              <span>Name</span>
-              <span>Slug</span>
-              <span></span>
+          <div className="casec-table-v2">
+            <div className="casec-table-header">
+              <span><Layout size={14} /> Name</span>
+              <span><Hash size={14} /> Slug</span>
+              <span>Status</span>
+              <span className="text-right">Actions</span>
             </div>
 
             {sections.map((s) => (
-              <div className="casec-table-row" key={s.slug}>
-                <span className="casec-name">{s.name}</span>
-                <span className="casec-slug">{s.slug}</span>
+              <div className={`casec-v2-row ${s.status}`} key={s.slug}>
+                <div className="casec-name-cell">
+                  <span className="font-bold">{s.name}</span>
+                  {s.is_system && <span className="sys-badge">System</span>}
+                </div>
+                
+                <span className="casec-slug-text">{s.slug}</span>
+                
+                <div className="casec-status-cell">
+                  <span className={`status-pill ${s.status || 'active'}`}>
+                    {s.status === 'banned' ? <AlertTriangle size={10} /> : <ShieldCheck size={10} />}
+                    {s.status || 'active'}
+                  </span>
+                </div>
 
-                {/* ✅ Critical Rule */}
-                {!s.is_system && (
-                  <button
-                    className="casec-delete-btn"
-                    onClick={() => handleDelete(s.slug)}
-                  >
-                    Delete
-                  </button>
-                )}
+                <div className="casec-actions-v2">
+                  {s.status === 'banned' ? (
+                    <button 
+                      onClick={() => handleActivate(s.slug)} 
+                      className="casec-btn-v2 activate"
+                      title="Reactivate"
+                    >
+                      <ShieldCheck size={16} />
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => handleBan(s.slug)} 
+                      className="casec-btn-v2 ban"
+                      title="Ban Section"
+                    >
+                      <ShieldAlert size={16} />
+                    </button>
+                  )}
+
+                  {!s.is_system && (
+                    <button 
+                      onClick={() => handleDelete(s.slug)} 
+                      className="casec-btn-v2 delete"
+                      title="Delete"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="casec-empty">No sections created</div>
+          <div className="casec-empty">No sections created for your company</div>
         )}
       </div>
     </div>

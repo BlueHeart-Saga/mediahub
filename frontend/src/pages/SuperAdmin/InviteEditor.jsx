@@ -119,26 +119,21 @@ export default function InviteEditor() {
         body: JSON.stringify(payload),
       });
 
-      if (res?.detail) {
-        if (res.detail.includes("already exists")) {
-          toast.error("This email is already registered");
-        } else {
-          toast.error(res.detail);
-        }
-        return;
-      }
-
-      if (res?.success || res?.message) {
-        toast.success(res.message || "Invitation sent successfully");
-        setForm({ email: "", name: "", company_id: "" });
-        loadEditors();
-      }
+      toast.success(res.message || "Invitation sent successfully");
+      setForm({ email: "", name: "", company_id: "" });
+      loadEditors();
     } catch (err) {
       console.error("Failed to send invitation:", err);
-      toast.error("Failed to send invitation");
+      const errorMessage = err.message || "Failed to send invitation";
+      if (errorMessage.includes("already exists")) {
+        toast.error("This email is already registered");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
+
   };
 
   const handleAction = async (editorId, action, successMessage) => {
@@ -194,18 +189,11 @@ export default function InviteEditor() {
 
       const res = await apiFetch(endpoint, { method });
 
-      if (res?.detail) {
-        toast.error(res.detail);
-        return;
-      }
-
-      if (res?.success || res?.message) {
-        toast.success(successMessage);
-        loadEditors(); // Reload the list
-      }
+      toast.success(successMessage);
+      loadEditors(); // Reload the list
     } catch (err) {
       console.error(`Failed to ${action} editor:`, err);
-      toast.error(`Failed to ${action} editor`);
+      toast.error(err.message || `Failed to ${action} editor`);
     } finally {
       setActionLoading(false);
       setActionId(null);

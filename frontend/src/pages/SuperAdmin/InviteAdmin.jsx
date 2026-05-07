@@ -97,27 +97,21 @@ export default function InviteAdmin() {
         body: JSON.stringify(form),
       });
 
-      if (res?.detail) {
-        // Handle specific error messages
-        if (res.detail.includes("already exists")) {
-          toast.error("This email is already registered");
-        } else {
-          toast.error(res.detail);
-        }
-        return;
-      }
-
-      if (res?.success || res?.message) {
-        toast.success(res.message || "Invitation sent successfully");
-        setForm({ email: "", name: "", company_id: "" });
-        loadAdmins(); // Reload the list
-      }
+      toast.success(res.message || "Invitation sent successfully");
+      setForm({ email: "", name: "", company_id: "" });
+      loadAdmins(); // Reload the list
     } catch (err) {
       console.error("Failed to send invitation:", err);
-      toast.error("Failed to send invitation");
+      const errorMessage = err.message || "Failed to send invitation";
+      if (errorMessage.includes("already exists")) {
+        toast.error("This email is already registered");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setActionLoading(false);
     }
+
   };
 
   const handleAction = async (adminId, action, successMessage) => {
@@ -173,18 +167,11 @@ export default function InviteAdmin() {
 
       const res = await apiFetch(endpoint, { method });
 
-      if (res?.detail) {
-        toast.error(res.detail);
-        return;
-      }
-
-      if (res?.success || res?.message) {
-        toast.success(successMessage);
-        loadAdmins(); // Reload the list
-      }
+      toast.success(successMessage);
+      loadAdmins(); // Reload the list
     } catch (err) {
       console.error(`Failed to ${action} admin:`, err);
-      toast.error(`Failed to ${action} admin`);
+      toast.error(err.message || `Failed to ${action} admin`);
     } finally {
       setActionLoading(false);
       setActionId(null);

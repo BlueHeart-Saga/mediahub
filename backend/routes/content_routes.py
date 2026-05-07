@@ -63,6 +63,8 @@ class BlockType(str, Enum):
     PULL_QUOTE = "pull-quote"
     CALLOUT = "callout"
     DOCUMENT = "document" 
+    AUDIO = "audio"
+    SPECIAL = "special"
 
 # Configuration constants
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif", "svg"}
@@ -88,7 +90,9 @@ BLOCK_REQUIREMENTS = {
     BlockType.CTA: ["label", "url"],
     BlockType.DIVIDER: [],
     BlockType.CALLOUT: ["value", "type"],
-    BlockType.DOCUMENT: ["title"]  # Document requirements
+    BlockType.DOCUMENT: ["title"],  # Document requirements
+    BlockType.AUDIO: ["url"],
+    BlockType.SPECIAL: ["value"]
 }
 
 
@@ -2044,6 +2048,157 @@ async def get_document(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
     
     
+# ==================== AUDIO MANAGEMENT ====================
+
+class AudioManager:
+    """
+    Manage audio uploads and storage with Azure Blob Storage
+    """
+    
+    @staticmethod
+    async def save_audio(
+        file: UploadFile,
+        company_id: str,
+        uploaded_by: str = None
+    ) -> Dict[str, Any]:
+        """
+        Save audio to Azure Blob Storage with metadata
+        """
+        if not file or not file.filename:
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Check file type
+        if not file.content_type.startswith('audio/'):
+            raise HTTPException(status_code=400, detail="Only audio files are allowed")
+        
+        # Read file
+        try:
+            contents = await file.read()
+        except Exception as e:
+            logger.error(f"Failed to read file: {str(e)}")
+            raise HTTPException(status_code=400, detail="Failed to read file")
+        
+        # Check file size (max 100MB for audio)
+        max_size = 100 * 1024 * 1024
+        if len(contents) > max_size:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File too large. Max size: {max_size // (1024 * 1024)}MB"
+            )
+        
+        # Calculate hash for duplicate detection
+        file_hash = hashlib.md5(contents).hexdigest()
+        
+        # Check for existing audio
+        existing = db.audios.find_one({
+            "company_id": company_id,
+            "hash": file_hash,
+            "is_deleted": {"$ne": True}
+        })
+        
+        if existing:
+            return {
+                "id": str(existing["_id"]),
+                "blob_name": existing["blob_name"],
+                "url": existing["url"],
+                "filename": existing["original_filename"],
+                "size": existing["size"],
+                "exists": True
+            }
+        
+        # Create audio ID
+        audio_id = ObjectId()
+        
+        try:
+            # Upload to Azure Blob Storage
+            upload_result = azure_storage.upload_file(
+                file_data=contents,
+                content_type=file.content_type,
+                metadata={
+                    "audio_id": str(audio_id),
+                    "company_id": company_id,
+                    "type": "audio",
+                    "original_filename": file.filename
+                },
+                original_filename=file.filename
+            )
+            
+            # Create metadata document
+            metadata_doc = {
+                "_id": audio_id,
+                "blob_name": upload_result["blob_name"],
+                "url": upload_result["url"],
+                "company_id": company_id,
+                "original_filename": file.filename,
+                "filename": f"{audio_id}.mp3",  # Usually not guaranteed to be mp3, but works for mapping
+                "size": len(contents),
+                "hash": file_hash,
+                "uploaded_by": uploaded_by,
+                "created_at": datetime.utcnow(),
+                "usage_count": 0,
+                "used_in": [],
+                "is_deleted": False,
+                "metadata": {
+                    "etag": upload_result.get("etag"),
+                    "last_modified": upload_result.get("last_modified")
+                }
+            }
+            
+            db.audios.insert_one(metadata_doc)
+            
+            return {
+                "id": str(audio_id),
+                "blob_name": upload_result["blob_name"],
+                "url": upload_result["url"],
+                "filename": file.filename,
+                "size": len(contents),
+                "exists": False
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to save audio: {str(e)}")
+            raise HTTPException(status_code=500, detail="Failed to save audio")
+
+@router.post("/audio/upload")
+async def upload_audio(
+    file: UploadFile = File(...),
+    company_id: Optional[str] = Query(None, description="Company ID for super admin"),
+    user: dict = Depends(get_current_user)
+):
+    """
+    Upload an audio file
+    """
+    role = user.get("role")
+    
+    # Determine which company_id to use
+    target_company_id = None
+    
+    if role == "super_admin":
+        if not company_id:
+            raise HTTPException(status_code=400, detail="company_id is required for super admin")
+        target_company_id = company_id
+    elif role in ["company_admin", "editor"]:
+        target_company_id = user.get("company_id")
+        if not target_company_id:
+            raise HTTPException(status_code=403, detail="User has no company assigned")
+    else:
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
+    
+    try:
+        result = await AudioManager.save_audio(file, target_company_id, user.get("id"))
+        return {
+            "file_id": result["id"],
+            "url": result["url"],
+            "filename": result.get("filename"),
+            "size": result.get("size"),
+            "exists": result.get("exists", False)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Audio upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Audio upload failed")
+
 # ==================== API ENDPOINTS ====================
 
 # Image endpoints
@@ -2292,6 +2447,9 @@ def list_content(
     category: Optional[str] = None,
     tag: Optional[str] = None,
     search: Optional[str] = None,
+    days: Optional[int] = Query(None, description="Filter content created in the last X days"),
+    start_date: Optional[str] = Query(None, description="ISO format start date"),
+    end_date: Optional[str] = Query(None, description="ISO format end date"),
     sort_by: str = Query("created_at", pattern="^(created_at|published_at|title|views)$"),
     sort_order: int = Query(-1, ge=-1, le=1)
 ):
@@ -2300,6 +2458,25 @@ def list_content(
     """
     # Build query
     query = {}
+    
+    # Timeframe filtering
+    if days:
+        query["created_at"] = {"$gte": datetime.utcnow() - timedelta(days=days)}
+    
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+            query.setdefault("created_at", {})["$gte"] = start_dt
+        except: pass
+        
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+            # Set to end of day if only date provided
+            if len(end_date) <= 10:
+                end_dt = end_dt.replace(hour=23, minute=59, second=59)
+            query.setdefault("created_at", {})["$lte"] = end_dt
+        except: pass
     
     role = user.get("role")
 
@@ -2355,6 +2532,7 @@ def list_content(
             "title": 1,
             "subtitle": 1,
             "slug": 1,
+            "company_id": 1,
             "cover_image_id": 1,
             "cover_image_info": 1,
             "section": 1,
@@ -2383,6 +2561,95 @@ def list_content(
         "skip": skip,
         "limit": limit,
         "has_more": (skip + limit) < total
+    }
+
+
+@router.get("/content/stats")
+def get_content_stats(
+    user: dict = Depends(get_current_user),
+    company_id: str | None = None,
+    status: Optional[ContentStatus] = None,
+    section: Optional[str] = None,
+    category: Optional[str] = None,
+    tag: Optional[str] = None,
+    search: Optional[str] = None,
+    days: Optional[int] = Query(None),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None)
+):
+    """
+    Get aggregate stats for content based on filters
+    """
+    query = {}
+    
+    # Reuse timeframe/filter logic (abstracted for brevity here, but must match list_content)
+    if days:
+        query["created_at"] = {"$gte": datetime.utcnow() - timedelta(days=days)}
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+            query.setdefault("created_at", {})["$gte"] = start_dt
+        except: pass
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+            if len(end_date) <= 10: end_dt = end_dt.replace(hour=23, minute=59, second=59)
+            query.setdefault("created_at", {})["$lte"] = end_dt
+        except: pass
+
+    role = user.get("role")
+    if role == "super_admin":
+        if company_id and company_id.strip() != "":
+            query["company_id"] = company_id.strip()
+    else:
+        query["company_id"] = user.get("company_id")
+
+    if section: query["section.slug"] = section
+    if category: query["category.slug"] = category
+    if tag: query["tags"] = tag
+    if search:
+        query["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"subtitle": {"$regex": search, "$options": "i"}},
+            {"tags": {"$regex": search, "$options": "i"}}
+        ]
+
+    # Calculate status counts
+    total = content_collection.count_documents(query)
+    
+    # Specific status counts
+    published_query = {**query, "status": ContentStatus.PUBLISHED}
+    draft_query = {**query, "status": ContentStatus.DRAFT}
+    archived_query = {**query, "status": ContentStatus.ARCHIVED}
+    
+    published = content_collection.count_documents(published_query)
+    draft = content_collection.count_documents(draft_query)
+    archived = content_collection.count_documents(archived_query)
+
+    # Aggregate engagement stats
+    pipeline = [
+        {"$match": query},
+        {
+            "$group": {
+                "_id": None,
+                "total_views": {"$sum": {"$ifNull": ["$stats.views", 0]}},
+                "total_likes": {"$sum": {"$ifNull": ["$stats.likes", 0]}},
+                "total_comments": {"$sum": {"$ifNull": ["$stats.comments", 0]}}
+            }
+        }
+    ]
+    
+    agg_results = list(content_collection.aggregate(pipeline))
+    engagement = agg_results[0] if agg_results else {}
+
+    return {
+        "total": total,
+        "published": published,
+        "draft": draft,
+        "archived": archived,
+        "views": engagement.get("total_views", 0),
+        "likes": engagement.get("total_likes", 0),
+        "comments": engagement.get("total_comments", 0)
     }
 
 

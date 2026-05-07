@@ -34,14 +34,16 @@ export default function ContactUs() {
       <div className="ph-login-card">
 
         <div className="ph-login-header">
-          <div className="ph-login-logo"></div>
-          <div
-    className="ph-login-home"
-    onClick={() => navigate("/")}
-    title="Go to Home"
-  >
-    <Home size={18} />
-  </div>
+          <div className="ph-login-top-row">
+            <div className="ph-login-logo"></div>
+            <div
+              className="ph-login-home"
+              onClick={() => navigate("/")}
+              title="Go to Home"
+            >
+              <Home size={18} />
+            </div>
+          </div>
 
           <h2>Contact Media Hub Team</h2>
           <p>Partnership inquiries, access requests, or support</p>

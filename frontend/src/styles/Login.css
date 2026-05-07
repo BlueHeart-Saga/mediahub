@@ -17,7 +17,7 @@
   border-radius: 16px;
   border: 1px solid #e5e7eb;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Header */
@@ -31,31 +31,37 @@
   height: 32px;
   background: #e5e7eb;
   border-radius: 6px;
-  margin-bottom: 18px;
 }
 
-.ph-login-header {
-  position: relative;
+.ph-login-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
 .ph-login-home {
-  position: absolute;
-  top: 0;
-  right: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   color: #6b7280;
+  border: 1px solid #f3f4f6;
   transition: all 0.2s ease;
 }
 
 .ph-login-home:hover {
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #111827;
+  border-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.ph-login-home:active {
+  transform: translateY(0);
 }
 
 .ph-login-header h2 {
@@ -188,6 +194,11 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

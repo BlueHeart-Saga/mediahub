@@ -13,27 +13,44 @@
   border-radius: 16px;
   border: 1px solid #e5e7eb;
   background: white;
-  position: relative;
+}
+
+.ph-login-logo {
+  width: 100px;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+.vo-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
 .vo-home {
-  position: absolute;
-  top: 18px;
-  right: 18px;
   cursor: pointer;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   color: #6b7280;
+  border: 1px solid #f3f4f6;
   transition: all 0.2s ease;
 }
 
 .vo-home:hover {
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #111827;
+  border-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.vo-home:active {
+  transform: translateY(0);
 }
 
 .vo-card h2 {

@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../../api/client";
 import toast from "react-hot-toast";
 import "../../styles/Sections.css";
+import { 
+  Plus, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Trash2, 
+  Layout, 
+  Building,
+  Hash,
+  AlertTriangle
+} from "lucide-react";
 
 export default function Sections() {
   const [companies, setCompanies] = useState([]);
@@ -111,6 +121,32 @@ export default function Sections() {
     }
   };
 
+  const handleBan = async (slug) => {
+    try {
+      await apiFetch(`/sections/${slug}/ban?company_id=${companyId}`, {
+        method: "PATCH",
+      });
+      toast.success("Section banned");
+      loadSections(companyId);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to ban section");
+    }
+  };
+
+  const handleActivate = async (slug) => {
+    try {
+      await apiFetch(`/sections/${slug}/activate?company_id=${companyId}`, {
+        method: "PATCH",
+      });
+      toast.success("Section activated");
+      loadSections(companyId);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to activate section");
+    }
+  };
+
   return (
     <div className="sec-page">
 
@@ -153,44 +189,67 @@ export default function Sections() {
 
       {/* ---------- Sections List ---------- */}
 
-      <div className="sec-table">
-
-        <div className="sec-table-head">
-          <span>Name</span>
-          <span>Slug</span>
-          <span></span>
+      <div className="sec-table-v2">
+        <div className="sec-table-header">
+          <span><Layout size={14} /> Name</span>
+          <span><Hash size={14} /> Slug</span>
+          <span>Status</span>
+          <span className="text-right">Actions</span>
         </div>
 
         {loadingSections ? (
-          <>
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-          </>
+          <div className="sec-loading-state">Loading sections...</div>
         ) : sections.length ? (
           sections.map((s) => (
-            <div key={s.slug} className="sec-row">
+            <div key={s.slug} className={`sec-v2-row ${s.status}`}>
+              <div className="sec-name-cell">
+                <span className="font-bold">{s.name}</span>
+                {s.is_system && <span className="sys-badge">System</span>}
+              </div>
+              
+              <span className="sec-slug-text">{s.slug}</span>
+              
+              <div className="sec-status-cell">
+                <span className={`status-pill ${s.status || 'active'}`}>
+                  {s.status === 'banned' ? <AlertTriangle size={10} /> : <ShieldCheck size={10} />}
+                  {s.status || 'active'}
+                </span>
+              </div>
 
-              <span>{s.name}</span>
-              <span className="muted">{s.slug}</span>
+              <div className="sec-actions-v2">
+                {s.status === 'banned' ? (
+                  <button 
+                    onClick={() => handleActivate(s.slug)} 
+                    className="sec-btn-v2 activate"
+                    title="Reactivate"
+                  >
+                    <ShieldCheck size={16} />
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleBan(s.slug)} 
+                    className="sec-btn-v2 ban"
+                    title="Ban Section"
+                  >
+                    <ShieldAlert size={16} />
+                  </button>
+                )}
 
-              {s.is_system ? (
-                <span className="sec-badge">System</span>
-              ) : (
-                <button
-                  onClick={() => handleDelete(s.slug)}
-                  className="sec-delete-btn"
-                >
-                  Delete
-                </button>
-              )}
-
+                {!s.is_system && (
+                  <button 
+                    onClick={() => handleDelete(s.slug)} 
+                    className="sec-btn-v2 delete"
+                    title="Delete"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
-          <div className="sec-empty">No sections found</div>
+          <div className="sec-empty">No sections found for this company</div>
         )}
-
       </div>
 
     </div>

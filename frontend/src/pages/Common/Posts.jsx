@@ -329,15 +329,6 @@ const PostCard = React.memo(function PostCard({
           </div>
         )}
 
-        {/* Company Badge */}
-        {isSuperAdmin && post.company_name && (
-          <div className="absolute bottom-3 left-3">
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#111827]/90 text-white rounded-full text-xs font-medium">
-              <Building2 size={12} />
-              {post.company_name}
-            </span>
-          </div>
-        )}
 
         {/* Hover Actions Overlay */}
         <AnimatePresence>
@@ -370,6 +361,16 @@ const PostCard = React.memo(function PostCard({
 
       {/* Content Section */}
       <div className="p-5 flex flex-col flex-grow">
+        {/* Company Tag - Super Admin Only */}
+        {isSuperAdmin && post.company_name && (
+          <div className="flex mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold uppercase tracking-wider border border-indigo-100 shadow-sm">
+              <Building2 size={13} className="text-indigo-600" />
+              {post.company_name}
+            </span>
+          </div>
+        )}
+
         <h3 className="text-lg font-semibold text-[#111827] mb-2 line-clamp-2 min-h-[3.5rem]">
           {post.title}
         </h3>
@@ -459,6 +460,16 @@ export default function Posts() {
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [stats, setStats] = useState({
+    total: 0,
+    published: 0,
+    draft: 0,
+    archived: 0,
+    views: 0,
+    likes: 0,
+    comments: 0
+  });
   const [filteredPosts, setFilteredPosts] = useState([]);
   
   // Loading states
@@ -510,77 +521,83 @@ export default function Posts() {
       // Create promises array
       const promises = [];
       
-      // Load companies if super admin
+      // Create promises map
+      const promiseTasks = {};
+      
+      // 1. Load companies if super admin
       if (isSuperAdmin) {
-        promises.push(
-          apiFetch("/companies").then(res => {
-            const companiesData = res?.companies || [];
-            setCompanies(companiesData);
-            if (companiesData.length > 0 && !selectedCompany) {
-              setSelectedCompany(companiesData[0].company_id);
-            }
-            return companiesData;
-          }).catch(err => {
-            console.error("Failed to load companies");
-            return [];
-          })
-        );
+        promiseTasks.companies = apiFetch("/companies").then(res => {
+          const data = res?.companies || [];
+          setCompanies(data);
+          return data;
+        });
       }
 
-      // Load sections if company selected
+      // 2. Load sections if company selected
       if (companyId) {
-        promises.push(
-          apiFetch(`/sections?company_id=${companyId}`).then(res => {
-            setSections(res?.sections || []);
-            return res?.sections || [];
-          }).catch(err => {
-            console.error("Failed to load sections");
-            return [];
-          })
-        );
+        promiseTasks.sections = apiFetch(`/sections?company_id=${companyId}`).then(res => {
+          const data = res?.sections || [];
+          setSections(data);
+          return data;
+        });
       }
 
-      // Build posts query
+      // 3. Build and load posts
       const postsParams = new URLSearchParams({
-        limit: "50", // Load more posts initially
+        limit: "50",
         ...(companyId && { company_id: companyId }),
         ...(selectedSection && { section: selectedSection }),
         ...(selectedCategory && { category: selectedCategory }),
         ...(filter !== "all" && { status: filter }),
-        ...(searchTerm && { search: searchTerm })
+        ...(searchTerm && { search: searchTerm }),
+        ...(tagFilter && { tag: tagFilter }),
+        ...(dateRange.start && { start_date: dateRange.start }),
+        ...(dateRange.end && { end_date: dateRange.end })
       });
 
-      promises.push(
-        apiFetch(`/content?${postsParams}`).then(res => {
-          const postsData = res?.items || [];
-          
-          // Enrich posts with company names for super admin
-          let enrichedPosts = postsData;
-          if (isSuperAdmin && companies.length > 0) {
-            enrichedPosts = postsData.map(post => ({
-              ...post,
-              company_name: companies.find(c => c.company_id === post.company_id)?.name || "Unknown Company",
-            }));
-          }
-          
-          setPosts(enrichedPosts);
-          
-          // Extract tags
-          const tags = new Set();
-          enrichedPosts.forEach(post => {
-            post.tags?.forEach(tag => tags.add(tag));
+      promiseTasks.posts = apiFetch(`/content?${postsParams}`).then(res => {
+        return res?.items || [];
+      });
+
+      promiseTasks.stats = apiFetch(`/content/stats?${postsParams}`).then(res => {
+        if (res) {
+          setStats({
+            total: res.total || 0,
+            published: res.published || 0,
+            draft: res.draft || 0,
+            archived: res.archived || 0,
+            views: res.views || 0,
+            likes: res.likes || 0,
+            comments: res.comments || 0
           });
-          setAvailableTags(Array.from(tags));
-          
-          return enrichedPosts;
-        }).catch(err => {
-          console.error("Failed to load posts:", err);
-          return [];
-        })
-      );
+        }
+        return res;
+      });
 
       // Wait for all promises
-      await Promise.all(promises);
+      const taskKeys = Object.keys(promiseTasks);
+      const taskValues = await Promise.all(Object.values(promiseTasks));
+      const results = Object.fromEntries(taskKeys.map((key, i) => [key, taskValues[i]]));
+      
+      let postsData = results.posts || [];
+      const currentCompanies = results.companies || companies;
+      
+      // Enrich posts with company names
+      if (isSuperAdmin && currentCompanies.length > 0) {
+        postsData = postsData.map(post => ({
+          ...post,
+          company_name: currentCompanies.find(c => c.company_id === post.company_id)?.name || "Unknown Company",
+        }));
+      }
+      
+      setPosts(postsData);
+      
+      // Extract tags
+      const tags = new Set();
+      postsData.forEach(post => {
+        post.tags?.forEach(tag => tags.add(tag));
+      });
+      setAvailableTags(Array.from(tags));
 
     } catch (error) {
       console.error("Error loading data:", error);
@@ -613,7 +630,7 @@ export default function Posts() {
 
   // Handle company change
   useEffect(() => {
-    if (isSuperAdmin && selectedCompany) {
+    if (isSuperAdmin) {
       setSelectedSection('');
       setSelectedCategory('');
       loadAllData(true);
@@ -623,14 +640,15 @@ export default function Posts() {
   // Handle filter changes - debounced
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (companyId) {
+      // Allow loading if it's super admin (can see all) OR if we have a specific company
+      if (isSuperAdmin || companyId) {
         setBackgroundLoading(true);
         loadAllData(false);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedSection, selectedCategory, filter, searchTerm]);
+  }, [selectedCompany, selectedSection, selectedCategory, filter, searchTerm]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -704,19 +722,6 @@ export default function Posts() {
     const end = start + POSTS_PER_PAGE;
     return processedPosts.slice(start, end);
   }, [processedPosts, page, POSTS_PER_PAGE]);
-
-  // Memoized stats
-  const stats = useMemo(() => {
-    const total = posts.length;
-    const published = posts.filter(p => p.status === "published").length;
-    const draft = posts.filter(p => p.status === "draft").length;
-    const archived = posts.filter(p => p.status === "archived").length;
-    const views = posts.reduce((sum, p) => sum + (p.stats?.views || 0), 0);
-    const comments = posts.reduce((sum, p) => sum + (p.stats?.comments || 0), 0);
-    const likes = posts.reduce((sum, p) => sum + (p.stats?.likes || 0), 0);
-    
-    return { total, published, draft, archived, views, comments, likes };
-  }, [posts]);
 
   // Memoized total pages
   const totalPages = useMemo(() => 

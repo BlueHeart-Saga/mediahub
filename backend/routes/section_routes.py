@@ -164,3 +164,43 @@ def delete_section(
         raise HTTPException(404, "Section not found")
 
     return {"message": "Section deleted"}
+
+# ✅ REACTIVATE SECTION
+@router.patch("/sections/{slug}/activate")
+def activate_section(
+    slug: str, 
+    company_id: str = Query(...),
+    user=Depends(get_current_user)
+):
+    cid = resolve_company_scope(user, company_id)
+    slug = normalize_slug(slug)
+
+    result = sections_collection.update_one(
+        {"company_id": cid, "slug": slug, "status": {"$ne": "deleted"}},
+        {"$set": {"status": "active", "updated_at": datetime.utcnow()}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Section not found")
+
+    return {"message": "Section activated"}
+
+# ✅ BAN SECTION
+@router.patch("/sections/{slug}/ban")
+def ban_section(
+    slug: str, 
+    company_id: str = Query(...),
+    user=Depends(get_current_user)
+):
+    cid = resolve_company_scope(user, company_id)
+    slug = normalize_slug(slug)
+
+    result = sections_collection.update_one(
+        {"company_id": cid, "slug": slug, "status": {"$ne": "deleted"}},
+        {"$set": {"status": "banned", "updated_at": datetime.utcnow()}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Section not found")
+
+    return {"message": "Section banned"}

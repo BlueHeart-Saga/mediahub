@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../../api/client";
 import toast from "react-hot-toast";
 import "../../styles/Companies.css";
+import { 
+  Edit3, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Trash2, 
+  Archive,
+  CheckCircle2,
+  XCircle
+} from "lucide-react";
 
 export default function Companies() {
   const [companies, setCompanies] = useState([]);
@@ -203,38 +212,71 @@ export default function Companies() {
 
                 <td>{c.status}</td>
 
-                <td className="cmp-actions">
-                  {editing === c.company_id ? (
-                    <>
-                      <button onClick={() => saveEdit(c.company_id)}>Save</button>
-                      <button onClick={() => setEditing(null)}>Cancel</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => startEdit(c)}>Edit</button>
-
-                      {c.status === "active" ? (
-                        <button onClick={() => suspendCompany(c.company_id)}>
-                          Suspend
+                <td className="cmp-actions-v2">
+                  <div className="cmp-v2-flex-container">
+                    {editing === c.company_id ? (
+                      <>
+                        <button 
+                          className="cmp-v2-action-btn cmp-v2-confirm" 
+                          onClick={() => saveEdit(c.company_id)}
+                          title="Save Changes"
+                        >
+                          <CheckCircle2 size={16} />
                         </button>
-                      ) : (
-                        <button onClick={() => activateCompany(c.company_id)}>
-                          Activate
+                        <button 
+                          className="cmp-v2-action-btn cmp-v2-cancel" 
+                          onClick={() => setEditing(null)}
+                          title="Cancel"
+                        >
+                          <XCircle size={16} />
                         </button>
-                      )}
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          className="cmp-v2-action-btn cmp-v2-edit" 
+                          onClick={() => startEdit(c)}
+                          title="Edit Company"
+                        >
+                          <Edit3 size={16} />
+                        </button>
 
-                      <button onClick={() => softDeleteCompany(c.company_id)}>
-                        Soft Delete
-                      </button>
+                        {c.status === "active" ? (
+                          <button 
+                            className="cmp-v2-action-btn cmp-v2-suspend" 
+                            onClick={() => suspendCompany(c.company_id)}
+                            title="Suspend Company"
+                          >
+                            <ShieldAlert size={16} />
+                          </button>
+                        ) : (
+                          <button 
+                            className="cmp-v2-action-btn cmp-v2-activate" 
+                            onClick={() => activateCompany(c.company_id)}
+                            title="Activate Company"
+                          >
+                            <ShieldCheck size={16} />
+                          </button>
+                        )}
 
-                      <button
-                        className="danger"
-                        onClick={() => permanentDeleteCompany(c.company_id)}
-                      >
-                        Permanent
-                      </button>
-                    </>
-                  )}
+                        <button 
+                          className="cmp-v2-action-btn cmp-v2-archive" 
+                          onClick={() => softDeleteCompany(c.company_id)}
+                          title="Soft Delete"
+                        >
+                          <Archive size={16} />
+                        </button>
+
+                        <button
+                          className="cmp-v2-action-btn cmp-v2-danger"
+                          onClick={() => permanentDeleteCompany(c.company_id)}
+                          title="Permanent Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

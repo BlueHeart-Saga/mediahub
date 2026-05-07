@@ -26,6 +26,7 @@ export default function SuperAdminDashboard() {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loadingActivity, setLoadingActivity] = useState(false);
   const [timeframe, setTimeframe] = useState('week');
+  const [visibleCount, setVisibleCount] = useState(8);
 
   const loadStats = async () => {
     try {
@@ -40,16 +41,25 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  const loadRecentActivity = async () => {
+  const loadRecentActivity = async (currentTimeframe) => {
     setLoadingActivity(true);
     try {
-      // Get recent content across all companies
-      const contentRes = await apiFetch("/content?limit=10&sort_by=created_at&sort_order=-1");
+      // Map timeframe to days
+      const daysMap = { 'week': 7, 'month': 30, 'year': 365 };
+      const days = daysMap[currentTimeframe || timeframe];
+      
+      // Get recent content across all companies within the timeframe
+      // We fetch a generous amount (e.g., 50) to allow "View More" without frequent re-fetching
+      const contentRes = await apiFetch(`/content?limit=50&days=${days}&sort_by=created_at&sort_order=-1`);
+      
       if (contentRes?.items) {
         setRecentActivity(contentRes.items);
+      } else {
+        setRecentActivity([]);
       }
     } catch (err) {
       console.error("Failed to load recent activity:", err);
+      setRecentActivity([]);
     } finally {
       setLoadingActivity(false);
     }
@@ -57,8 +67,15 @@ export default function SuperAdminDashboard() {
 
   useEffect(() => {
     loadStats();
-    loadRecentActivity();
+    loadRecentActivity('week');
   }, []);
+
+  // Handle timeframe change
+  const handleTimeframeChange = (newTimeframe) => {
+    setTimeframe(newTimeframe);
+    setVisibleCount(8); // Reset visible count on timeframe change
+    loadRecentActivity(newTimeframe);
+  };
 
   const getStatusBadgeClass = (status) => {
     switch(status) {
@@ -426,6 +443,10 @@ export default function SuperAdminDashboard() {
             <div></div>
             <div></div>
             <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         ) : (
           <div className="sad-actions-grid">
@@ -450,7 +471,7 @@ export default function SuperAdminDashboard() {
               onClick={() => navigate("/super-admin/invite-editor")}
             >
               <EnvelopeIcon className="sad-action-icon" />
-              <span>Invite Admin</span>
+              <span>Invite Editor</span>
             </button>
 
             <button 
@@ -484,6 +505,14 @@ export default function SuperAdminDashboard() {
               <TagIcon className="sad-action-icon" />
               <span>Manage Categories</span>
             </button>
+
+            <button 
+              className="sad-action-btn sad-action-info"
+              onClick={() => navigate("/super-admin/subscribe")}
+            >
+              <EnvelopeIcon className="sad-action-icon" />
+              <span>Subscriptions</span>
+            </button>
           </div>
         )}
       </div>
@@ -495,19 +524,19 @@ export default function SuperAdminDashboard() {
           <div className="sad-timeframe-selector">
             <button 
               className={`sad-timeframe-btn ${timeframe === 'week' ? 'active' : ''}`}
-              onClick={() => setTimeframe('week')}
+              onClick={() => handleTimeframeChange('week')}
             >
               Week
             </button>
             <button 
               className={`sad-timeframe-btn ${timeframe === 'month' ? 'active' : ''}`}
-              onClick={() => setTimeframe('month')}
+              onClick={() => handleTimeframeChange('month')}
             >
               Month
             </button>
             <button 
               className={`sad-timeframe-btn ${timeframe === 'year' ? 'active' : ''}`}
-              onClick={() => setTimeframe('year')}
+              onClick={() => handleTimeframeChange('year')}
             >
               Year
             </button>
@@ -516,45 +545,56 @@ export default function SuperAdminDashboard() {
 
         <div className="sad-activity-list">
           {loadingActivity ? (
-            <>
-              <SkeletonActivity />
-              <SkeletonActivity />
-              <SkeletonActivity />
-              <SkeletonActivity />
-              <SkeletonActivity />
-            </>
-          ) : recentActivity.length > 0 ? (
-            recentActivity.map(item => (
-              <div key={item.id} className="sad-activity-item">
-                <div className="sad-activity-item-content">
-                  <div className="sad-activity-item-title">{item.title}</div>
-                  <div className="sad-activity-item-meta">
-                    <span className="sad-company-badge">
-                      <BuildingOfficeIcon className="sad-icon-small" />
-                      {item.company_id}
-                    </span>
-                    <span className={`sad-status-badge-small ${getStatusBadgeClass(item.status)}`}>
-                      {item.status}
-                    </span>
-                    <span className="sad-activity-item-date">
-                      <ClockIcon className="sad-icon-small" />
-                      {formatDate(item.created_at)}
-                    </span>
-                  </div>
-                </div>
-                {item.author && (
-                  <div className="sad-activity-item-author">
-                    <span className="sad-author-name">by {item.author.name}</span>
-                  </div>
-                )}
+            Array(5).fill(0).map((_, i) => (
+              <div key={i} className="sad-skeleton-activity">
+                <div className="sad-skeleton-line"></div>
+                <div className="sad-skeleton-line short"></div>
               </div>
             ))
+          ) : recentActivity.length > 0 ? (
+            <>
+              {recentActivity.slice(0, visibleCount).map((activity) => (
+                <div key={activity.id} className="sad-activity-item">
+                  <div className="sad-activity-item-content">
+                    <div className="sad-activity-item-title">{activity.title}</div>
+                    <div className="sad-activity-item-meta">
+                      <div className="sad-company-badge">
+                        <BuildingOfficeIcon className="sad-icon-small" />
+                        {activity.company_id || 'System'}
+                      </div>
+                      <span className={`sad-status-badge-small ${getStatusBadgeClass(activity.status)}`}>
+                        {activity.status}
+                      </span>
+                      <div className="sad-activity-item-date">
+                        <ClockIcon className="sad-icon-small" />
+                        {formatDate(activity.created_at)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sad-activity-item-author">
+                    <div className="sad-author-name">by {activity.author?.name || 'Unknown'}</div>
+                  </div>
+                </div>
+              ))}
+              
+              {recentActivity.length > visibleCount && (
+                <div className="sad-view-more-container">
+                  <button 
+                    className="sad-view-more-btn"
+                    onClick={() => setVisibleCount(prev => prev + 8)}
+                  >
+                    View More Activity
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="sad-empty-state">
-              <p>No recent activity</p>
+              No activity found for this {timeframe}
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

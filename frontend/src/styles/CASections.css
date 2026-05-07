@@ -82,69 +82,148 @@
   opacity: 0.95;
 }
 
-/* Table */
+/* Table V2 */
 
-.casec-table-head,
-.casec-table-row {
+.casec-table-v2 {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.casec-table-header {
   display: grid;
-  grid-template-columns: 1.2fr 1fr auto;
+  grid-template-columns: 2fr 1.5fr 1fr 150px;
+  background: #f8fafc;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.casec-v2-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 150px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
   align-items: center;
-  padding: 10px 6px;
+  transition: all 0.2s ease;
+}
+
+.casec-v2-row:hover {
+  background: #fcfcfd;
+}
+
+.casec-v2-row.banned {
+  background: #fffcfc;
+}
+
+.casec-v2-row:last-child {
+  border-bottom: none;
+}
+
+.casec-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.sys-badge {
+  font-size: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.casec-slug-text {
+  font-family: monospace;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-pill.active {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-pill.banned {
+  background: #fff7ed;
+  color: #d97706;
+}
+
+.casec-actions-v2 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.casec-btn-v2 {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.casec-btn-v2:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.casec-btn-v2.activate:hover {
+  color: #059669;
+  border-color: #d1fae5;
+  background: #ecfdf5;
+}
+
+.casec-btn-v2.ban:hover {
+  color: #d97706;
+  border-color: #fef3c7;
+  background: #fffbeb;
+}
+
+.casec-btn-v2.delete:hover {
+  color: #dc2626;
+  border-color: #fee2e2;
+  background: #fef2f2;
+}
+
+.casec-loading {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
   font-size: 14px;
 }
 
-.casec-table-head {
-  color: #6b7280;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.casec-table-row {
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.casec-name {
-  color: #111827;
-  font-weight: 500;
-}
-
-.casec-slug {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-/* Delete */
-
-.casec-delete-btn {
-  background: transparent;
-  border: none;
-  color: #dc2626;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.casec-delete-btn:hover {
-  text-decoration: underline;
-}
-
-/* Empty */
-
 .casec-empty {
-  padding: 14px 6px;
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-/* Skeleton */
-
-.casec-skeleton-row {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr auto;
-  padding: 10px 6px;
-  gap: 12px;
-}
-
-.casec-skeleton-row div {
-  height: 10px;
-  background: #e5e7eb;
-  border-radius: 6px;
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
 }

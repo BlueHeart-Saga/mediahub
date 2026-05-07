@@ -110,26 +110,21 @@ export default function CAInviteEditor() {
         body: JSON.stringify(payload),
       });
 
-      if (res?.detail) {
-        if (res.detail.includes("already exists")) {
-          toast.error("This email is already registered");
-        } else {
-          toast.error(res.detail);
-        }
-        return;
-      }
-
-      if (res?.success || res?.message) {
-        toast.success(res.message || "Invitation sent successfully");
-        setForm({ email: "", name: "" });
-        loadEditors();
-      }
+      toast.success(res.message || "Invitation sent successfully");
+      setForm({ email: "", name: "" });
+      loadEditors();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to send invitation");
+      const errorMessage = err.message || "Failed to send invitation";
+      if (errorMessage.includes("already exists")) {
+        toast.error("This email is already registered");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
+
   };
 
   const handleAction = async (editorId, action, successMessage, method = "PATCH") => {
@@ -149,15 +144,10 @@ export default function CAInviteEditor() {
 
       const res = await apiFetch(endpoint, { method });
 
-      if (res?.detail) {
-        toast.error(res.detail);
-        return;
-      }
-
       toast.success(successMessage);
       loadEditors();
     } catch (err) {
-      toast.error(`Failed to ${action} editor`);
+      toast.error(err.message || `Failed to ${action} editor`);
     } finally {
       setActionLoading(false);
     }

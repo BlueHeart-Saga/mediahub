@@ -23,6 +23,7 @@ export default function CompanyAdminDashboard() {
   const [timeframe, setTimeframe] = useState('week');
   const [recentActivity, setRecentActivity] = useState([]);
   const [loadingActivity, setLoadingActivity] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(8);
 
   const loadStats = async () => {
     try {
@@ -41,10 +42,12 @@ export default function CompanyAdminDashboard() {
   const loadRecentActivity = async () => {
     setLoadingActivity(true);
     try {
-      // Get recent content
-      const contentRes = await apiFetch("/content?limit=5&sort_by=created_at&sort_order=-1");
+      const days = timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 365;
+      // Get recent content with days filter and enough limit for "view more"
+      const contentRes = await apiFetch(`/content?limit=50&days=${days}&sort_by=created_at&sort_order=-1`);
       if (contentRes?.items) {
         setRecentActivity(contentRes.items);
+        setVisibleCount(8); // Reset visible count on timeframe change
       }
     } catch (err) {
       console.error("Failed to load recent activity:", err);
@@ -55,8 +58,11 @@ export default function CompanyAdminDashboard() {
 
   useEffect(() => {
     loadStats();
-    loadRecentActivity();
   }, []);
+
+  useEffect(() => {
+    loadRecentActivity();
+  }, [timeframe]);
 
   const getStatusBadgeClass = (status) => {
     switch(status) {
@@ -296,10 +302,63 @@ export default function CompanyAdminDashboard() {
         </div>
       </div>
 
+      {/* Company Info Block */}
+      {stats?.company && (
+        <div className="cad-card cad-info-card-top">
+          <div className="cad-card-header">
+            <div className="cad-card-header-left">
+              <BuildingOfficeIcon className="cad-card-icon" />
+              <h3 className="cad-card-title">Company Profile</h3>
+            </div>
+          </div>
+          <div className="cad-company-info-horizontal">
+            <div className="cad-info-item">
+              <span className="cad-info-label">Company ID</span>
+              <span className="cad-info-value">{stats.company.id}</span>
+            </div>
+            <div className="cad-info-item">
+              <span className="cad-info-label">Company Name</span>
+              <span className="cad-info-value">{stats.company.name}</span>
+            </div>
+            <div className="cad-info-item">
+              <span className="cad-info-label">Operational Status</span>
+              <span className={`cad-status-badge ${stats.company.status === 'active' ? 'cad-status-active' : 'cad-status-inactive'}`}>
+                {stats.company.status}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="cad-card">
+        <div className="cad-card-header">
+          <h3 className="cad-card-title">Quick Actions</h3>
+        </div>
+        <div className="cad-actions-grid">
+          <button className="cad-action-btn cad-action-primary" onClick={() => window.location.href = '/company-admin/invite-editor'}>
+            <UserGroupIcon className="cad-icon" />
+            <span>Invite Editor</span>
+          </button>
+          <button className="cad-action-btn cad-action-success" onClick={() => window.location.href = '/company-admin/content'}>
+            <DocumentTextIcon className="cad-icon" />
+            <span>Create Content</span>
+          </button>
+          <button className="cad-action-btn cad-action-info" onClick={() => window.location.href = '/company-admin/sections'}>
+            <FolderIcon className="cad-icon" />
+            <span>Manage Sections</span>
+          </button>
+          <button className="cad-action-btn cad-action-warning" onClick={() => window.location.href = '/company-admin/categories'}>
+            <TagIcon className="cad-icon" />
+            <span>Manage Categories</span>
+          </button>
+        </div>
+      </div>
+
       {/* Recent Activity Section */}
-      <div className="cad-activity-section">
-        <div className="cad-section-header">
-          <h2 className="cad-section-title">Recent Activity</h2>
+      <div className="cad-card cad-activity-card-full">
+        <div className="cad-card-header">
+          <h2 className="cad-card-title">Recent Activity</h2>
           <div className="cad-timeframe-selector">
             <button 
               className={`cad-timeframe-btn ${timeframe === 'week' ? 'active' : ''}`}
@@ -322,112 +381,62 @@ export default function CompanyAdminDashboard() {
           </div>
         </div>
 
-        <div className="cad-activity-grid">
-          {/* Recent Content */}
-          <div className="cad-activity-card">
-            <div className="cad-activity-card-header">
-              <DocumentTextIcon className="cad-activity-icon" />
-              <h3 className="cad-activity-card-title">Recent Content</h3>
-            </div>
-            <div className="cad-activity-list">
-              {loadingActivity ? (
-                <>
-                  <SkeletonActivity />
-                  <SkeletonActivity />
-                  <SkeletonActivity />
-                </>
-              ) : recentActivity.length > 0 ? (
-                recentActivity.map(item => (
-                  <div key={item.id} className="cad-activity-item">
-                    <div className="cad-activity-item-content">
-                      <div className="cad-activity-item-title">{item.title}</div>
-                      <div className="cad-activity-item-meta">
-                        <span className={`cad-status-badge-small ${getStatusBadgeClass(item.status)}`}>
-                          {item.status}
-                        </span>
-                        <span className="cad-activity-item-date">
-                          <CalendarIcon className="cad-icon-small" />
-                          {formatDate(item.created_at)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="cad-activity-stats">
-                      {item.stats && (
-                        <>
-                          <span className="cad-stat-badge" title="Views">
-                            <EyeIcon className="cad-icon-small" />
-                            {item.stats.views || 0}
-                          </span>
-                          <span className="cad-stat-badge" title="Comments">
-                            <ChatBubbleLeftIcon className="cad-icon-small" />
-                            {item.stats.comments || 0}
-                          </span>
-                          <span className="cad-stat-badge" title="Likes">
-                            <HeartIcon className="cad-icon-small" />
-                            {item.stats.likes || 0}
-                          </span>
-                        </>
-                      )}
+        <div className="cad-activity-list">
+          {loadingActivity ? (
+            <>
+              <SkeletonActivity />
+              <SkeletonActivity />
+              <SkeletonActivity />
+            </>
+          ) : recentActivity.length > 0 ? (
+            <>
+              {recentActivity.slice(0, visibleCount).map(item => (
+                <div key={item.id} className="cad-activity-item">
+                  <div className="cad-activity-item-content">
+                    <div className="cad-activity-item-title">{item.title}</div>
+                    <div className="cad-activity-item-meta">
+                      <span className={`cad-status-badge-small ${getStatusBadgeClass(item.status)}`}>
+                        {item.status}
+                      </span>
+                      <span className="cad-activity-item-date">
+                        <CalendarIcon className="cad-icon-small" />
+                        {formatDate(item.created_at)}
+                      </span>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="cad-empty-state">
-                  <p>No recent content</p>
+                  <div className="cad-activity-stats">
+                    {item.stats && (
+                      <>
+                        <span className="cad-stat-badge" title="Views">
+                          <EyeIcon className="cad-icon-small" />
+                          {item.stats.views || 0}
+                        </span>
+                        <span className="cad-stat-badge" title="Comments">
+                          <ChatBubbleLeftIcon className="cad-icon-small" />
+                          {item.stats.comments || 0}
+                        </span>
+                        <span className="cad-stat-badge" title="Likes">
+                          <HeartIcon className="cad-icon-small" />
+                          {item.stats.likes || 0}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
+              ))}
+              
+              {recentActivity.length > visibleCount && (
+                <button 
+                  className="cad-view-more-btn"
+                  onClick={() => setVisibleCount(prev => prev + 8)}
+                >
+                  View More
+                </button>
               )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="cad-activity-card">
-            <div className="cad-activity-card-header">
-              <ArrowTrendingUpIcon className="cad-activity-icon" />
-              <h3 className="cad-activity-card-title">Quick Actions</h3>
-            </div>
-            <div className="cad-quick-actions">
-              <button className="cad-quick-action-btn" onClick={() => window.location.href = '/company-admin/invite-editor'}>
-                <UserGroupIcon className="cad-icon" />
-                <span>Invite Editor</span>
-              </button>
-              <button className="cad-quick-action-btn" onClick={() => window.location.href = '/company-admin/content'}>
-                <DocumentTextIcon className="cad-icon" />
-                <span>Create Content</span>
-              </button>
-              <button className="cad-quick-action-btn" onClick={() => window.location.href = '/company-admin/sections'}>
-                <FolderIcon className="cad-icon" />
-                <span>Manage Sections</span>
-              </button>
-              <button className="cad-quick-action-btn" onClick={() => window.location.href = '/company-admin/sections'}>
-                <TagIcon className="cad-icon" />
-                <span>Manage Categories</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Company Info */}
-          {stats?.company && (
-            <div className="cad-activity-card">
-              <div className="cad-activity-card-header">
-                <BuildingOfficeIcon className="cad-activity-icon" />
-                <h3 className="cad-activity-card-title">Company Info</h3>
-              </div>
-              <div className="cad-company-info">
-                <div className="cad-info-row">
-                  <span className="cad-info-label">Company ID:</span>
-                  <span className="cad-info-value">{stats.company.id}</span>
-                </div>
-                <div className="cad-info-row">
-                  <span className="cad-info-label">Company Name:</span>
-                  <span className="cad-info-value">{stats.company.name}</span>
-                </div>
-                <div className="cad-info-row">
-                  <span className="cad-info-label">Status:</span>
-                  <span className={`cad-status-badge ${stats.company.status === 'active' ? 'cad-status-active' : 'cad-status-inactive'}`}>
-                    {stats.company.status}
-                  </span>
-                </div>
-              </div>
+            </>
+          ) : (
+            <div className="cad-empty-state">
+              <p>No recent content</p>
             </div>
           )}
         </div>

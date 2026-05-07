@@ -217,7 +217,7 @@ def invite_super_admin(payload: dict):
             message = "Super Admin invited successfully"
 
         # Send invitation email
-        send_email(
+        if not send_email(
             to_email=email,
             subject="Welcome to Mediahub - Super Admin Access",
             body=build_super_admin_invite_email(
@@ -225,7 +225,12 @@ def invite_super_admin(payload: dict):
                 otp=otp,
                 frontend_url=FRONTEND_URL
             )
-        )
+        ):
+            logger.error(f"Failed to send invitation email to {email}")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to send invitation email. Please try again."
+            )
 
         logger.info(f"Super Admin invited: {email}")
 
@@ -334,7 +339,7 @@ def create_super_admin(
         message = "Super Admin invited successfully"
 
     # Send invitation email
-    send_email(
+    if not send_email(
         to_email=email,
         subject="Welcome to Mediahub - Super Admin Access",
         body=build_super_admin_invite_email(
@@ -342,7 +347,12 @@ def create_super_admin(
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to send invitation email to {email}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email. Please try again."
+        )
 
     # logger.info(f"Super Admin invited by {current_user.get('email')}: {email}")
 
@@ -471,7 +481,7 @@ def resend_super_admin_invite(
     )
 
     # Send invitation email
-    send_email(
+    if not send_email(
         to_email=target["email"],
         subject="Welcome to Mediahub - Super Admin Access",
         body=build_super_admin_invite_email(
@@ -479,7 +489,12 @@ def resend_super_admin_invite(
             otp=otp,
             frontend_url=FRONTEND_URL
         )
-    )
+    ):
+        logger.error(f"Failed to resend invitation to {target['email']}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send invitation email"
+        )
 
     logger.info(f"Super admin invitation resent to: {target['email']}")
 
@@ -782,9 +797,14 @@ def resend_otp(payload: dict):
 
         if not email_sent:
             logger.error(f"Failed to send OTP email to {email}")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to send OTP email. Please try again."
+            )
 
         return {
-            "message": "If account exists, OTP will be sent"
+            "message": "OTP sent successfully",
+            "success": True
         }
 
     except HTTPException:
@@ -869,6 +889,10 @@ def forgot_password(payload: dict):
 
         if not email_sent:
             logger.error(f"Failed to send reset email to {email}")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to send password reset email"
+            )
 
         return {
             "message": "If account exists, password reset OTP will be sent"

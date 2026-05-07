@@ -38,12 +38,24 @@ export default function VerifyOtp() {
       return;
     }
 
-    if (form.password.length < 6) {
-      const msg = "Password must be at least 6 characters";
+    if (form.password.length < 8) {
+      const msg = "Password must be at least 8 characters";
       setError(msg);
       toast.error(msg);
       return;
     }
+
+    const hasUpper = /[A-Z]/.test(form.password);
+    const hasLower = /[a-z]/.test(form.password);
+    const hasNumber = /[0-9]/.test(form.password);
+
+    if (!hasUpper || !hasLower || !hasNumber) {
+      const msg = "Password must contain uppercase, lowercase and a number";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
 
     if (form.password !== form.confirmPassword) {
       const msg = "Passwords do not match";
@@ -134,12 +146,15 @@ export default function VerifyOtp() {
     <div className="vo-page">
       <div className="vo-card">
 
-        <div
-          className="vo-home"
-          onClick={() => navigate("/")}
-          title="Go to Home"
-        >
-          <Home size={18} />
+        <div className="vo-top-row">
+          <div className="ph-login-logo"></div>
+          <div
+            className="vo-home"
+            onClick={() => navigate("/")}
+            title="Go to Home"
+          >
+            <Home size={18} />
+          </div>
         </div>
 
         <h2>Verify OTP</h2>

@@ -3,6 +3,17 @@ import { apiFetch } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import "../../styles/Categories.css";
+import { 
+  Plus, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Trash2, 
+  Layers, 
+  Hash,
+  AlertTriangle,
+  Building,
+  Layout
+} from "lucide-react";
 
 const generateSlug = (v) =>
   v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -125,6 +136,32 @@ export default function Categories() {
     }
   };
 
+  const handleBan = async (slug) => {
+    try {
+      await apiFetch(
+        `/categories/${slug}/ban?company_id=${companyId}&section_slug=${sectionSlug}`,
+        { method: "PATCH" }
+      );
+      toast.success("Category banned");
+      loadCategories(companyId, sectionSlug);
+    } catch {
+      toast.error("Failed to ban category");
+    }
+  };
+
+  const handleActivate = async (slug) => {
+    try {
+      await apiFetch(
+        `/categories/${slug}/activate?company_id=${companyId}&section_slug=${sectionSlug}`,
+        { method: "PATCH" }
+      );
+      toast.success("Category activated");
+      loadCategories(companyId, sectionSlug);
+    } catch {
+      toast.error("Failed to activate category");
+    }
+  };
+
   const previewSlug = generateSlug(name);
 
   /* ---------------- UI ---------------- */
@@ -217,33 +254,68 @@ export default function Categories() {
         </button>
       </div>
 
-      {/* LIST */}
-      <div className="cat-card">
-        <div className="cat-card-title">Existing Categories</div>
+      <div className="cat-table-v2">
+        <div className="cat-table-header">
+          <span><Layers size={14} /> Name</span>
+          <span><Hash size={14} /> Slug</span>
+          <span>Status</span>
+          <span className="text-right">Actions</span>
+        </div>
 
         {loadingCategories ? (
-          <>
-            <div className="cat-skeleton-row"></div>
-            <div className="cat-skeleton-row"></div>
-          </>
+          <div className="cat-loading-state">Loading categories...</div>
         ) : categories.length ? (
           categories.map((c) => (
-            <div className="cat-table-row" key={c.slug}>
-              <span>{c.name}</span>
-              <span className="cat-slug">{c.slug}</span>
+            <div key={c.slug} className={`cat-v2-row ${c.status}`}>
+              <div className="cat-name-cell">
+                <span className="font-bold">{c.name}</span>
+                {c.is_system && <span className="sys-badge">System</span>}
+              </div>
+              
+              <span className="cat-slug-text">{c.slug}</span>
+              
+              <div className="cat-status-cell">
+                <span className={`status-pill ${c.status || 'active'}`}>
+                  {c.status === 'banned' ? <AlertTriangle size={10} /> : <ShieldCheck size={10} />}
+                  {c.status || 'active'}
+                </span>
+              </div>
 
-              {!c.is_system && (
-                <button
-                  className="cat-delete-btn"
-                  onClick={() => handleDelete(c.slug)}
-                >
-                  Delete
-                </button>
-              )}
+              <div className="cat-actions-v2">
+                {c.status === 'banned' ? (
+                  <button 
+                    onClick={() => handleActivate(c.slug)} 
+                    className="cat-btn-v2 activate"
+                    title="Reactivate"
+                  >
+                    <ShieldCheck size={16} />
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleBan(c.slug)} 
+                    className="cat-btn-v2 ban"
+                    title="Ban Category"
+                  >
+                    <ShieldAlert size={16} />
+                  </button>
+                )}
+
+                {!c.is_system && (
+                  <button 
+                    onClick={() => handleDelete(c.slug)} 
+                    className="cat-btn-v2 delete"
+                    title="Delete"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
-          <div className="cat-empty">No categories available</div>
+          <div className="cat-empty">
+            {sectionSlug ? "No categories available in this section" : "Select a section to view categories"}
+          </div>
         )}
       </div>
     </div>

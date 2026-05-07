@@ -26,6 +26,7 @@ export default function EditorDashboard() {
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [timeframe, setTimeframe] = useState('week');
+  const [visibleCount, setVisibleCount] = useState(8);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -41,28 +42,34 @@ export default function EditorDashboard() {
       }
     };
 
-    const loadRecentPosts = async () => {
-      setLoadingPosts(true);
-      try {
-        // Get recent posts by this editor
-        const res = await api.getContent({ 
-          limit: 5, 
-          sort_by: 'created_at', 
-          sort_order: -1 
-        });
-        if (res?.items) {
-          setRecentPosts(res.items);
-        }
-      } catch (err) {
-        console.error("Failed to load recent posts:", err);
-      } finally {
-        setLoadingPosts(false);
-      }
-    };
-
     loadStats();
-    loadRecentPosts();
   }, []);
+
+  const loadRecentPosts = async () => {
+    setLoadingPosts(true);
+    try {
+      const days = timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 365;
+      // Get recent posts with days filter and enough limit for "view more"
+      const res = await api.getContent({ 
+        limit: 50,
+        days: days,
+        sort_by: 'created_at', 
+        sort_order: -1 
+      });
+      if (res?.items) {
+        setRecentPosts(res.items);
+        setVisibleCount(8); // Reset visible count on timeframe change
+      }
+    } catch (err) {
+      console.error("Failed to load recent posts:", err);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRecentPosts();
+  }, [timeframe]);
 
   const getStatusBadgeClass = (status) => {
     switch(status) {
@@ -392,40 +399,51 @@ export default function EditorDashboard() {
               <SkeletonActivity />
             </>
           ) : recentPosts.length > 0 ? (
-            recentPosts.map(post => (
-              <div key={post.id} className="ed-activity-item">
-                <div className="ed-activity-item-content">
-                  <div className="ed-activity-item-title">{post.title}</div>
-                  <div className="ed-activity-item-meta">
-                    <span className={`ed-status-badge-small ${getStatusBadgeClass(post.status)}`}>
-                      {post.status}
-                    </span>
-                    <span className="ed-activity-item-date">
-                      <CalendarIcon className="ed-icon-small" />
-                      {formatDate(post.created_at)}
-                    </span>
+            <>
+              {recentPosts.slice(0, visibleCount).map(post => (
+                <div key={post.id} className="ed-activity-item">
+                  <div className="ed-activity-item-content">
+                    <div className="ed-activity-item-title">{post.title}</div>
+                    <div className="ed-activity-item-meta">
+                      <span className={`ed-status-badge-small ${getStatusBadgeClass(post.status)}`}>
+                        {post.status}
+                      </span>
+                      <span className="ed-activity-item-date">
+                        <CalendarIcon className="ed-icon-small" />
+                        {formatDate(post.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="ed-activity-stats">
+                    {post.stats && (
+                      <>
+                        <span className="ed-stat-badge" title="Views">
+                          <EyeIcon className="ed-icon-small" />
+                          {post.stats.views || 0}
+                        </span>
+                        <span className="ed-stat-badge" title="Comments">
+                          <ChatBubbleLeftIcon className="ed-icon-small" />
+                          {post.stats.comments || 0}
+                        </span>
+                        <span className="ed-stat-badge" title="Likes">
+                          <HeartIcon className="ed-icon-small" />
+                          {post.stats.likes || 0}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
-                <div className="ed-activity-stats">
-                  {post.stats && (
-                    <>
-                      <span className="ed-stat-badge" title="Views">
-                        <EyeIcon className="ed-icon-small" />
-                        {post.stats.views || 0}
-                      </span>
-                      <span className="ed-stat-badge" title="Comments">
-                        <ChatBubbleLeftIcon className="ed-icon-small" />
-                        {post.stats.comments || 0}
-                      </span>
-                      <span className="ed-stat-badge" title="Likes">
-                        <HeartIcon className="ed-icon-small" />
-                        {post.stats.likes || 0}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))
+              ))}
+
+              {recentPosts.length > visibleCount && (
+                <button 
+                  className="ed-view-more-btn"
+                  onClick={() => setVisibleCount(prev => prev + 8)}
+                >
+                  View More
+                </button>
+              )}
+            </>
           ) : (
             <div className="ed-empty-state">
               <p>No recent activity</p>
