@@ -132,11 +132,11 @@ class ImageManager:
             width, height = img.size
             
             # Validate dimensions
-            if width > MAX_IMAGE_DIMENSION or height > MAX_IMAGE_DIMENSION:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Image dimensions too large. Max: {MAX_IMAGE_DIMENSION}x{MAX_IMAGE_DIMENSION}"
-                )
+            # if width > MAX_IMAGE_DIMENSION or height > MAX_IMAGE_DIMENSION:
+            #     raise HTTPException(
+            #         status_code=400,
+            #         detail=f"Image dimensions too large. Max: {MAX_IMAGE_DIMENSION}x{MAX_IMAGE_DIMENSION}"
+            #     )
             
             # Convert to RGB if necessary (for PNG with alpha)
             if img.mode in ('RGBA', 'LA', 'P'):
