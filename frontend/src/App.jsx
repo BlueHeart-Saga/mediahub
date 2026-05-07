@@ -5,13 +5,17 @@ import "./index.css"
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import SuperAdminRegister from './pages/SuperAdminRegister';
-import SuperAdminManage from "./pages/SuperAdminManage";
+// import SuperAdminRegister from './pages/SuperAdminRegister';
+import SuperAdminManage from "./pages/developer/SuperAdminManage";
+import SuperAdminRequests from "./pages/developer/SuperAdminRequests";
+import DeveloperOverview from "./pages/developer/DeveloperOverview";
 import RegisterBlocked from "./pages/RegisterBlocked";
 import ContactUs from "./pages/ContactUs";
+import DeveloperLogin from "./pages/developer/DeveloperLogin";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
+import DeveloperLayout from "./layouts/DeveloperLayout";
 
 import VerifyOtp from "./pages/Auth/VerifyOtp";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
@@ -67,15 +71,30 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterBlocked />} />
-        <Route path="/developer/superadmin/register" element={<Register />} />
-        <Route path="/developer/register/superadmin" element={<SuperAdminRegister />} />
-        <Route path="/developer/superadmin/manage" element={<SuperAdminManage />} />
         <Route path="/contact" element={<ContactUs />} />
         
 
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+
+
+        {/* ---------- COMPANY ADMIN ---------- */}
+
+        <Route path="/developer/login" element={<DeveloperLogin />} />
+        <Route path="/developer/superadmin/register" element={<Register />} />
+        
+        <Route path="/developer/superadmin" element={<DeveloperLayout />}>
+            <Route path="manage" element={<SuperAdminManage />} />
+            <Route path="requests" element={<SuperAdminRequests />} />
+            <Route path="overview" element={<DeveloperOverview />} />
+          </Route>
+
+
+
+
+        {/* ---------- PUBLIC PAGES ---------- */}
 
         
         <Route path="/companies" element={<PublicCompanies />} />   {/*  show all companies */}
@@ -87,6 +106,8 @@ export default function App() {
         <Route path="/company/:companyId/:sectionSlug/:categorySlug/:contentId" element={<PublicContent />} />   {/*  view post */}
 
         <Route path="/content/:contentId" element={<ContentView />} />   {/*  view post */}
+
+
 
         {/* ---------- SUPER ADMIN ---------- */}
         <Route

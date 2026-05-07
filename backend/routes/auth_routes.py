@@ -5,7 +5,7 @@ import logging
 from bson import ObjectId
 from typing import Optional
 
-from database import users_collection, companies_collection
+from database import users_collection, companies_collection, registration_requests_collection
 from core.security import hash_password, verify_password, create_token
 from core.mailer import send_email
 from core.templates.otp_email import build_otp_email
@@ -255,17 +255,17 @@ def invite_super_admin(payload: dict):
 @router.post("/create-super-admin")
 def create_super_admin(
     payload: dict,
-    # current_user: dict = Depends(get_current_user)  # Requires authentication
+    current_user: dict = Depends(get_current_user)  # Requires authentication
 ):
     """
     Create a new super admin (Existing Super Admin only)
     """
     # Check if current user is super admin
-    # if current_user.get("role") != "super_admin":
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="Only super admins can create new super admins"
-    #     )
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Only super admins can create new super admins"
+        )
 
     name = payload.get("name", "").strip()
     email = payload.get("email", "").strip().lower()
@@ -300,8 +300,8 @@ def create_super_admin(
                         "status": "pending",
                         "updated_at": datetime.utcnow(),
                         "deleted_at": None,
-                        # "invited_by": current_user.get("id"),
-                        # "invited_by_email": current_user.get("email")
+                        "invited_by": current_user.get("id"),
+                        "invited_by_email": current_user.get("email")
                     }
                 }
             )
@@ -327,9 +327,9 @@ def create_super_admin(
             "status": "pending",
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            # "created_by": current_user.get("id"),
-            # "invited_by": current_user.get("id"),
-            # "invited_by_email": current_user.get("email"),
+            "created_by": current_user.get("id"),
+            "invited_by": current_user.get("id"),
+            "invited_by_email": current_user.get("email"),
             "profile_image": None,
             "avatar_id": None,
             "metadata": {
@@ -354,7 +354,7 @@ def create_super_admin(
             detail="Failed to send invitation email. Please try again."
         )
 
-    # logger.info(f"Super Admin invited by {current_user.get('email')}: {email}")
+    logger.info(f"Super Admin invited by {current_user.get('email')}: {email}")
 
     return {
         "message": message,
@@ -369,9 +369,12 @@ def get_super_admins(
     skip: int = 0,
     limit: int = 10,
     status: Optional[str] = None,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
 ):
     """Get all super admins"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
     query = {"role": "super_admin", "status": {"$ne": "deleted"}}
     
     if status:
@@ -403,22 +406,108 @@ def get_super_admins(
     }
 
 @router.patch("/admin/users/{user_id}/suspend")
-def suspend_user(user_id: str):
-    """Suspend a user"""
-    # Add your logic here
-    pass
+def suspend_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Suspend a user (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+        
+    try:
+        target = users_collection.find_one({"_id": ObjectId(user_id)})
+    except:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if target.get("status") == "suspended":
+        raise HTTPException(status_code=400, detail="User is already suspended")
+
+    # Cannot suspend self
+    if str(target["_id"]) == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot suspend yourself")
+
+    users_collection.update_one(
+        {"_id": target["_id"]},
+        {
+            "$set": {
+                "status": "suspended",
+                "updated_at": datetime.utcnow(),
+                "suspended_at": datetime.utcnow(),
+                "suspended_by": current_user["id"]
+            }
+        }
+    )
+    
+    logger.info(f"User suspended: {target['email']} by {current_user['email']}")
+    return {"message": "User suspended successfully", "success": True}
 
 @router.patch("/admin/users/{user_id}/activate")
-def activate_user(user_id: str):
-    """Activate a user"""
-    # Add your logic here
-    pass
+def activate_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Activate a suspended user (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+        
+    try:
+        target = users_collection.find_one({"_id": ObjectId(user_id)})
+    except:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if target.get("status") != "suspended":
+        raise HTTPException(status_code=400, detail="User is not suspended")
+
+    users_collection.update_one(
+        {"_id": target["_id"]},
+        {
+            "$set": {
+                "status": "active",
+                "updated_at": datetime.utcnow(),
+                "activated_at": datetime.utcnow(),
+                "activated_by": current_user["id"]
+            }
+        }
+    )
+    
+    logger.info(f"User activated: {target['email']} by {current_user['email']}")
+    return {"message": "User activated successfully", "success": True}
 
 @router.delete("/admin/users/{user_id}")
-def delete_user(user_id: str):
-    """Delete a user"""
-    # Add your logic here
-    pass
+def delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Soft delete a user (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+        
+    try:
+        target = users_collection.find_one({"_id": ObjectId(user_id)})
+    except:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if target.get("status") == "deleted":
+        raise HTTPException(status_code=400, detail="User already deleted")
+
+    # Cannot delete self
+    if str(target["_id"]) == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+
+    users_collection.update_one(
+        {"_id": target["_id"]},
+        {
+            "$set": {
+                "status": "deleted",
+                "updated_at": datetime.utcnow(),
+                "deleted_at": datetime.utcnow(),
+                "deleted_by": current_user["id"]
+            }
+        }
+    )
+    
+    logger.info(f"User deleted: {target['email']} by {current_user['email']}")
+    return {"message": "User deleted successfully", "success": True}
     
 #  Resend super admin invite
 
@@ -430,11 +519,11 @@ def resend_super_admin_invite(
     """
     Resend invitation to a pending super admin (Super Admin only)
     """
-    # if current_user.get("role") != "super_admin":
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="Only super admins can resend invitations"
-    #     )
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Only super admins can resend invitations"
+        )
 
     try:
         target = users_collection.find_one({"_id": ObjectId(admin_id)})
@@ -501,6 +590,82 @@ def resend_super_admin_invite(
     return {
         "message": "Invitation resent successfully", 
         "success": True
+    }
+
+@router.post("/developer-login")
+def developer_login(payload: dict):
+    """Special login for developers with hardcoded credentials"""
+    email = payload.get("email", "").strip().lower()
+    password = payload.get("password", "")
+
+    if email == "developer@mediahub.com" and password == "developerme":
+        # Check if developer user exists in DB
+        user = users_collection.find_one({"email": email})
+        if not user:
+            # Create developer user
+            user_data = {
+                "name": "Platform Developer",
+                "email": email,
+                "password": hash_password(password),
+                "role": "super_admin",
+                "status": "active",
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            res = users_collection.insert_one(user_data)
+            user_id = str(res.inserted_id)
+        else:
+            user_id = str(user["_id"])
+            # Ensure it has super_admin role
+            if user.get("role") != "super_admin":
+                users_collection.update_one({"_id": user["_id"]}, {"$set": {"role": "super_admin"}})
+
+        token_data = {
+            "id": user_id,
+            "email": email,
+            "role": "super_admin"
+        }
+        token = create_token(token_data)
+
+        return {
+            "token": token,
+            "user": {
+                "id": user_id,
+                "name": "Platform Developer",
+                "email": email,
+                "role": "super_admin"
+            }
+        }
+    
+    raise HTTPException(status_code=401, detail="Invalid developer credentials")
+
+@router.get("/developer/overview")
+def get_developer_overview(current_user: dict = Depends(get_current_user)):
+    """Get all users and all companies for developer overview (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    # 1. Fetch all companies
+    companies = list(companies_collection.find({}, {"_id": 0}))
+
+    # 2. Fetch all users (excluding sensitive data)
+    users_cursor = users_collection.find(
+        {}, 
+        {"password": 0, "otp": 0, "reset_otp": 0, "otp_expiry": 0}
+    ).sort("created_at", -1)
+
+    users = []
+    # Create a mapping of company_id to company_name for fast lookup
+    company_map = {c["company_id"]: c["name"] for c in companies}
+
+    for u in users_cursor:
+        u["_id"] = str(u["_id"])
+        u["company_name"] = company_map.get(u.get("company_id"), "N/A")
+        users.append(u)
+
+    return {
+        "users": users,
+        "companies": companies
     }
 
 # ✅ Login (All Roles)
@@ -1061,3 +1226,96 @@ def change_password(
             status_code=500, 
             detail="Failed to change password. Please try again."
         )
+
+# ✅ Registration Requests
+@router.post("/registration-requests")
+def submit_registration_request(payload: dict):
+    """Submit a request to join the platform"""
+    name = payload.get("name", "").strip()
+    email = payload.get("email", "").strip().lower()
+    company_name = payload.get("company_name", "").strip()
+    message = payload.get("message", "").strip()
+
+    if not name or not email or not company_name:
+        raise HTTPException(status_code=400, detail="Name, email, and company name are required")
+
+    if not validate_email(email):
+        raise HTTPException(status_code=400, detail="Invalid email format")
+
+    # Check if request already exists
+    existing = registration_requests_collection.find_one({"email": email, "status": "pending"})
+    if existing:
+        raise HTTPException(status_code=409, detail="A pending request already exists for this email")
+
+    request_data = {
+        "name": name,
+        "email": email,
+        "company_name": company_name,
+        "message": message,
+        "status": "pending",
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
+
+    registration_requests_collection.insert_one(request_data)
+    return {"message": "Request submitted successfully", "success": True}
+
+@router.get("/registration-requests")
+def get_registration_requests(
+    skip: int = 0,
+    limit: int = 50,
+    status: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all registration requests (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    query = {}
+    if status:
+        query["status"] = status
+
+    total = registration_requests_collection.count_documents(query)
+    cursor = registration_requests_collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+
+    requests = []
+    for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        requests.append(doc)
+
+    return {
+        "requests": requests,
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+@router.patch("/registration-requests/{request_id}")
+def update_registration_request(
+    request_id: str,
+    payload: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update status of a registration request (Super Admin only)"""
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    status = payload.get("status")
+    if status not in ["approved", "rejected", "pending"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+    try:
+        result = registration_requests_collection.update_one(
+            {"_id": ObjectId(request_id)},
+            {"$set": {
+                "status": status,
+                "updated_at": datetime.utcnow(),
+                "handled_by": current_user["id"]
+            }}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Request not found")
+        
+        return {"message": f"Request {status} successfully", "success": True}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

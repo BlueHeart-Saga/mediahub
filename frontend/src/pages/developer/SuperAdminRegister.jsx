@@ -1,7 +1,7 @@
 // pages/SuperAdminRegister.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../api/client";
+import { apiFetch } from "../../api/client";
 import { Shield, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function SuperAdminRegister() {

@@ -37,6 +37,7 @@ content_views_collection = db["content_views"]
 content_stats_daily_collection = db["content_stats_daily"]
 subscribers_collection = db["subscribers"]
 subscription_logs = db["subscription_logs"]
+registration_requests_collection = db["registration_requests"]
 
 # Create unique index for subscribers
 subscribers_collection.create_index(
