@@ -1684,9 +1684,9 @@ export default function EditorContent() {
             <button onClick={() => addBlock("document")} title="PDF Document" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-all duration-150">
               <FileText className="w-4 h-4" />
             </button>
-            <button onClick={() => addBlock("audio")} title="Audio" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-all duration-150">
+            {/* <button onClick={() => addBlock("audio")} title="Audio" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-all duration-150">
               <Mic className="w-4 h-4" />
-            </button>
+            </button> */}
             <div className="w-5 h-px bg-gray-100 my-0.5" />
             <button onClick={() => addBlock("quote")} title="Quote" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition-all duration-150">
               <Quote className="w-4 h-4" />
@@ -1700,9 +1700,9 @@ export default function EditorContent() {
             <button onClick={() => addBlock("divider")} title="Divider" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition-all duration-150">
               <MoreHorizontal className="w-4 h-4" />
             </button>
-            <button onClick={() => addBlock("special")} title="Special Block (Rich Text)" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition-all duration-150">
+            {/* <button onClick={() => addBlock("special")} title="Special Block (Rich Text)" className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition-all duration-150">
               <Type className="w-4 h-4" />
-            </button>
+            </button> */}
           </div>
         </div>{/* End flex row */}
 
@@ -2048,8 +2048,8 @@ function blocksToDrawText(blocks) {
       case "video":         return b.data?.url || "";
       case "embed":         return b.data?.url || "";
       case "image":         return `![${b.data?.alt || ""}](${b.data?.file_id || ""})`;
-      case "audio":         return b.data?.url || "";
-      case "special":       return b.data?.value || "";
+      // case "audio":         return b.data?.url || "";
+      // case "special":       return b.data?.value || "";
       default:              return "";
     }
   }).filter(Boolean).join("\n\n");
@@ -2103,11 +2103,41 @@ function DrawPostModal({
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showSetupPrompt, setShowSetupPrompt] = useState(false);
   
+  const addNewBlock = (type) => {
+    const baseData = {
+      text: { value: "" },
+      heading: { value: "" },
+      subheading: { value: "" },
+      quote: { value: "" },
+      "pull-quote": { value: "" },
+      code: { value: "", language: "javascript" },
+      image: { file_id: null, alt: "", caption: "" },
+      video: { url: "", caption: "" },
+      embed: { url: "", caption: "" },
+      document: { file_id: null, url: "", title: "" },
+      "bullet-list": { items: [""] },
+      "numbered-list": { items: [""] },
+      cta: { label: "", url: "", style: "primary" },
+      divider: {},
+      callout: { value: "", type: "info" }
+    };
+
+    const newBlock = {
+      id: uuid(),
+      type,
+      data: baseData[type] || {},
+    };
+
+    setBlocks((prev) => [...prev, newBlock]);
+    setSynced(false);
+  };
+  
   // Selection and Drag State
   const [selectedBlockIds, setSelectedBlockIds] = useState([]);
   const [activeDragId, setActiveDragId] = useState(null);
 
-  // Link Modal State
+  // Link Modal State (Hidden for now)
+  /*
   const [linkModal, setLinkModal] = useState({ open: false, text: "", url: "", target: "draft" }); // target: 'draft' | blockId
 
   const openLinkModal = (target = "draft") => {
@@ -2150,6 +2180,7 @@ function DrawPostModal({
     }
     setLinkModal({ open: false, text: "", url: "", target: "draft" });
   };
+  */
 
   // Dnd-kit Sensors
   const sensors = useSensors(
@@ -2266,7 +2297,8 @@ function DrawPostModal({
     }, 300);
   };
 
-  /* ── Add Link Modal JSX ── */
+  /* ── Add Link Modal JSX (Hidden) ── */
+  /*
   const renderLinkModal = () => {
     if (!linkModal.open) return null;
     return (
@@ -2316,6 +2348,7 @@ function DrawPostModal({
       </div>
     );
   };
+  */
 
   /* ── Apply + open preview ── */
   const handlePreview = () => {
@@ -2430,8 +2463,8 @@ function DrawPostModal({
         .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); }
       `}</style>
 
-      {/* Link Modal */}
-      {renderLinkModal()}
+      {/* Link Modal (Hidden) */}
+      {/* {renderLinkModal()} */}
 
       {/* ── Fixed Header ── */}
       <div className="flex h-16 items-center justify-between px-6 glass-panel z-50 sticky top-0 shadow-sm">
@@ -2487,24 +2520,31 @@ function DrawPostModal({
             
             {/* ── Professional Sticky Sidebar ── */}
             <div className="hidden lg:flex w-12 flex-col sticky top-[100px] self-start z-10 animate-in slide-in-from-left-4 duration-500">
-              <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] py-3 px-1.5 flex flex-col items-center gap-1.5">
-                <button onClick={() => ins("**","**")} title="Bold" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Bold size={18}/></button>
-                <button onClick={() => ins("*","*")} title="Italic" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Italic size={18}/></button>
-                <button onClick={() => openLinkModal("draft")} title="Link" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Link2 size={18}/></button>
-                <button onClick={() => ins("`","`")} title="Code" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors font-bold text-xs">&lt;/&gt;</button>
+              <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] py-3 px-1.5 flex flex-col items-center gap-1">
+                <button onClick={() => addNewBlock("text")} title="Text" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                  <AlignLeft size={18} />
+                </button>
+                <button onClick={() => addNewBlock("heading")} title="Heading 1" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors font-black text-sm">H1</button>
+                <button onClick={() => addNewBlock("subheading")} title="Heading 2" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors font-bold text-xs">H2</button>
+                
                 <div className="w-6 h-px bg-slate-100 my-1" />
-                <button onClick={() => insLine("# ")} title="H1" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors font-black text-sm">H1</button>
-                <button onClick={() => insLine("## ")} title="H2" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors font-bold text-xs">H2</button>
+                
+                <button onClick={() => addNewBlock("bullet-list")} title="Bullet List" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"><List size={18}/></button>
+                <button onClick={() => addNewBlock("numbered-list")} title="Numbered List" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"><ListOrdered size={18}/></button>
+                
                 <div className="w-6 h-px bg-slate-100 my-1" />
-                <button onClick={() => insLine("- ")} title="List" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><List size={18}/></button>
-                <button onClick={() => insLine("1. ")} title="Num List" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><ListOrdered size={18}/></button>
+                
+                <button onClick={() => addNewBlock("image")} title="Upload Image" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><ImageIcon size={18}/></button>
+                <button onClick={() => addNewBlock("video")} title="Video" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><Video size={18}/></button>
+                <button onClick={() => addNewBlock("embed")} title="Embed" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><Link2 size={18}/></button>
+                <button onClick={() => addNewBlock("document")} title="PDF Document" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><FileText size={18}/></button>
+                
                 <div className="w-6 h-px bg-slate-100 my-1" />
-                <button onClick={() => insLine("> ")} title="Quote" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Quote size={18}/></button>
-                <button onClick={() => insLine("---")} title="Line" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><MoreHorizontal size={18}/></button>
-                <div className="w-6 h-px bg-slate-100 my-1" />
-                <button onClick={() => insLine("https://youtube.com/watch?v=")} title="Video" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Video size={18}/></button>
-                <button onClick={() => ins("[","](url)")} title="Link" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors"><Link2 size={18}/></button>
-                <button onClick={() => imgInputRef.current?.click()} title="Image" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"><ImageIcon size={18}/></button>
+                
+                <button onClick={() => addNewBlock("quote")} title="Quote" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors"><Quote size={18}/></button>
+                <button onClick={() => addNewBlock("code")} title="Code Block" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors font-bold text-xs">&lt;/&gt;</button>
+                <button onClick={() => addNewBlock("cta")} title="Call to Action" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors"><Hash size={18}/></button>
+                <button onClick={() => addNewBlock("divider")} title="Divider" className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors"><MoreHorizontal size={18}/></button>
               </div>
             </div>
 
@@ -3573,6 +3613,7 @@ function SortableBlock({
           </div>
         );
 
+      /*
       case "audio":
         return (
           <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
@@ -3702,6 +3743,7 @@ function SortableBlock({
             />
           </div>
         );
+        */
 
       default:
         return null;
