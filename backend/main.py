@@ -50,7 +50,8 @@ origins = [
     "https://devopstrio.co.uk",
     "https://devopstrio-c7aqc5ccfudrh2ec.southindia-01.azurewebsites.net",
     "https://chalkyinfo.com",
-    "https://chalkyinfotech-ctftb6dmg9fgchbe.southindia-01.azurewebsites.net"
+    "https://chalkyinfotech-ctftb6dmg9fgchbe.southindia-01.azurewebsites.net",
+    "https://devopstrio-qa-f9ascyfeffezezb2.southindia-01.azurewebsites.net",
 ]
 
 app.add_middleware(
