@@ -31,7 +31,7 @@ const MENU_CONFIG = {
     { label: "Categories", path: "categories", icon: FolderKanban },
     { label: "Post Management", path: "content", icon: Pencil },
     { label: "View Posts", path: "posts", icon: Eye },
-    { label: "Manage Subscribers", path: "subscribe", icon: Bell},
+    { label: "Manage Subscribers", path: "subscribe", icon: Bell },
   ],
   company_admin: [
     { label: "Dashboard", path: "dashboard", icon: LayoutDashboard },
@@ -61,7 +61,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   // Get menu items based on user role
   const getMenuItems = () => {
     if (!user) return [];
-    
+
     const roleMenu = MENU_CONFIG[user.role] || [];
     return [...roleMenu, ...COMMON_MENU_ITEMS];
   };
@@ -83,7 +83,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   };
 
   return (
-    <aside 
+    <aside
       className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}`}
       aria-label="Main navigation"
     >
@@ -108,8 +108,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
                   className={`sidebar__link ${active ? "sidebar__link--active" : ""}`}
                   aria-current={active ? "page" : undefined}
                 >
-                  <Icon 
-                    size={18} 
+                  <Icon
+                    size={18}
                     className="sidebar__icon"
                     aria-hidden="true"
                   />
@@ -130,13 +130,13 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           <div className="sidebar__user">
             <div className="sidebar__user-avatar">
               {user?.profile_image ? (
-    <img
-      src={`data:${user.profile_image.content_type};base64,${user.profile_image.data}`}
-      alt="Profile"
-    />
-  ) : (
-    user?.name?.charAt(0)?.toUpperCase() || "U"
-  )}
+                <img
+                  src={`data:${user.profile_image.content_type};base64,${user.profile_image.data}`}
+                  alt="Profile"
+                />
+              ) : (
+                user?.name?.charAt(0)?.toUpperCase() || "U"
+              )}
             </div>
             <div className="sidebar__user-info">
               <p className="sidebar__user-name">{user.name || "User"}</p>

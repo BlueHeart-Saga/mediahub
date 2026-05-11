@@ -50,11 +50,11 @@ export default function EditorDashboard() {
     try {
       const days = timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 365;
       // Get recent posts with days filter and enough limit for "view more"
-      const res = await api.getContent({ 
+      const res = await api.getContent({
         limit: 50,
         days: days,
-        sort_by: 'created_at', 
-        sort_order: -1 
+        sort_by: 'created_at',
+        sort_order: -1
       });
       if (res?.items) {
         setRecentPosts(res.items);
@@ -72,7 +72,7 @@ export default function EditorDashboard() {
   }, [timeframe]);
 
   const getStatusBadgeClass = (status) => {
-    switch(status) {
+    switch (status) {
       case 'published': return 'ed-status-published';
       case 'draft': return 'ed-status-draft';
       case 'archived': return 'ed-status-archived';
@@ -86,7 +86,7 @@ export default function EditorDashboard() {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return 'Today';
     } else if (diffDays === 1) {
@@ -290,8 +290,8 @@ export default function EditorDashboard() {
                 <span className="ed-progress-value">{stats?.my_content?.published_posts || 0}</span>
               </div>
               <div className="ed-progress-bar">
-                <div 
-                  className="ed-progress-fill ed-progress-published" 
+                <div
+                  className="ed-progress-fill ed-progress-published"
                   style={{ width: `${((stats?.my_content?.published_posts || 0) / (stats?.my_content?.total_posts || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -302,8 +302,8 @@ export default function EditorDashboard() {
                 <span className="ed-progress-value">{stats?.my_content?.draft_posts || 0}</span>
               </div>
               <div className="ed-progress-bar">
-                <div 
-                  className="ed-progress-fill ed-progress-draft" 
+                <div
+                  className="ed-progress-fill ed-progress-draft"
                   style={{ width: `${((stats?.my_content?.draft_posts || 0) / (stats?.my_content?.total_posts || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -340,21 +340,21 @@ export default function EditorDashboard() {
             <h3 className="ed-summary-title">Quick Actions</h3>
           </div>
           <div className="ed-quick-actions">
-            <button 
+            <button
               className="ed-quick-action-btn"
               onClick={() => navigate("/content/create")}
             >
               <DocumentTextIcon className="ed-action-icon" />
               <span>Create New Post</span>
             </button>
-            <button 
+            <button
               className="ed-quick-action-btn"
               onClick={() => navigate("/content?status=draft")}
             >
               <PencilSquareIcon className="ed-action-icon" />
               <span>Continue Drafts</span>
             </button>
-            <button 
+            <button
               className="ed-quick-action-btn"
               onClick={() => navigate("/content")}
             >
@@ -370,19 +370,19 @@ export default function EditorDashboard() {
         <div className="ed-card-header">
           <h3 className="ed-card-title">Recent Activity</h3>
           <div className="ed-timeframe-selector">
-            <button 
+            <button
               className={`ed-timeframe-btn ${timeframe === 'week' ? 'active' : ''}`}
               onClick={() => setTimeframe('week')}
             >
               Week
             </button>
-            <button 
+            <button
               className={`ed-timeframe-btn ${timeframe === 'month' ? 'active' : ''}`}
               onClick={() => setTimeframe('month')}
             >
               Month
             </button>
-            <button 
+            <button
               className={`ed-timeframe-btn ${timeframe === 'year' ? 'active' : ''}`}
               onClick={() => setTimeframe('year')}
             >
@@ -436,7 +436,7 @@ export default function EditorDashboard() {
               ))}
 
               {recentPosts.length > visibleCount && (
-                <button 
+                <button
                   className="ed-view-more-btn"
                   onClick={() => setVisibleCount(prev => prev + 8)}
                 >

@@ -38,10 +38,10 @@ export default function Home() {
             </button>
           </Link>
           <Link to="/companies" className="ph-home-link">
-    <button className="ph-home-btn ph-home-btn-outline">
-      View Companies
-    </button>
-  </Link>
+            <button className="ph-home-btn ph-home-btn-outline">
+              View Companies
+            </button>
+          </Link>
         </div>
 
       </div>

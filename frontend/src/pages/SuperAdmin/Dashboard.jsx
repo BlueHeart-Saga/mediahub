@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../api/client";
 import { useNavigate } from "react-router-dom";
-import { 
-  BuildingOfficeIcon, 
-  UsersIcon, 
-  UserGroupIcon, 
+import {
+  BuildingOfficeIcon,
+  UsersIcon,
+  UserGroupIcon,
   DocumentTextIcon,
   FolderIcon,
   TagIcon,
@@ -47,11 +47,11 @@ export default function SuperAdminDashboard() {
       // Map timeframe to days
       const daysMap = { 'week': 7, 'month': 30, 'year': 365 };
       const days = daysMap[currentTimeframe || timeframe];
-      
+
       // Get recent content across all companies within the timeframe
       // We fetch a generous amount (e.g., 50) to allow "View More" without frequent re-fetching
       const contentRes = await apiFetch(`/content?limit=50&days=${days}&sort_by=created_at&sort_order=-1`);
-      
+
       if (contentRes?.items) {
         setRecentActivity(contentRes.items);
       } else {
@@ -78,7 +78,7 @@ export default function SuperAdminDashboard() {
   };
 
   const getStatusBadgeClass = (status) => {
-    switch(status) {
+    switch (status) {
       case 'active': return 'sad-status-active';
       case 'pending': return 'sad-status-pending';
       case 'suspended': return 'sad-status-suspended';
@@ -95,7 +95,7 @@ export default function SuperAdminDashboard() {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return 'Today';
     } else if (diffDays === 1) {
@@ -124,11 +124,11 @@ export default function SuperAdminDashboard() {
         <div className="sad-header-right">
           <div className="sad-time-badge">
             <ClockIcon className="sad-icon-small" />
-            <span>{new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            <span>{new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}</span>
           </div>
         </div>
@@ -328,8 +328,8 @@ export default function SuperAdminDashboard() {
                 <span className="sad-progress-value">{stats?.users?.active || 0}</span>
               </div>
               <div className="sad-progress-bar">
-                <div 
-                  className="sad-progress-fill sad-progress-active" 
+                <div
+                  className="sad-progress-fill sad-progress-active"
                   style={{ width: `${((stats?.users?.active || 0) / (stats?.users?.total || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -340,8 +340,8 @@ export default function SuperAdminDashboard() {
                 <span className="sad-progress-value">{stats?.users?.pending || 0}</span>
               </div>
               <div className="sad-progress-bar">
-                <div 
-                  className="sad-progress-fill sad-progress-pending" 
+                <div
+                  className="sad-progress-fill sad-progress-pending"
                   style={{ width: `${((stats?.users?.pending || 0) / (stats?.users?.total || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -352,8 +352,8 @@ export default function SuperAdminDashboard() {
                 <span className="sad-progress-value">{stats?.users?.suspended || 0}</span>
               </div>
               <div className="sad-progress-bar">
-                <div 
-                  className="sad-progress-fill sad-progress-suspended" 
+                <div
+                  className="sad-progress-fill sad-progress-suspended"
                   style={{ width: `${((stats?.users?.suspended || 0) / (stats?.users?.total || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -374,8 +374,8 @@ export default function SuperAdminDashboard() {
                 <span className="sad-progress-value">{stats?.content?.published_posts || 0}</span>
               </div>
               <div className="sad-progress-bar">
-                <div 
-                  className="sad-progress-fill sad-progress-published" 
+                <div
+                  className="sad-progress-fill sad-progress-published"
                   style={{ width: `${((stats?.content?.published_posts || 0) / (stats?.content?.total_posts || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -386,8 +386,8 @@ export default function SuperAdminDashboard() {
                 <span className="sad-progress-value">{stats?.content?.draft_posts || 0}</span>
               </div>
               <div className="sad-progress-bar">
-                <div 
-                  className="sad-progress-fill sad-progress-draft" 
+                <div
+                  className="sad-progress-fill sad-progress-draft"
                   style={{ width: `${((stats?.content?.draft_posts || 0) / (stats?.content?.total_posts || 1)) * 100}%` }}
                 ></div>
               </div>
@@ -450,7 +450,7 @@ export default function SuperAdminDashboard() {
           </div>
         ) : (
           <div className="sad-actions-grid">
-            <button 
+            <button
               className="sad-action-btn sad-action-primary"
               onClick={() => navigate("/super-admin/companies")}
             >
@@ -458,7 +458,7 @@ export default function SuperAdminDashboard() {
               <span>Create Company</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-success"
               onClick={() => navigate("/super-admin/invite-admin")}
             >
@@ -466,7 +466,7 @@ export default function SuperAdminDashboard() {
               <span>Invite Admin</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-success"
               onClick={() => navigate("/super-admin/invite-editor")}
             >
@@ -474,7 +474,7 @@ export default function SuperAdminDashboard() {
               <span>Invite Editor</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-info"
               onClick={() => navigate("/super-admin/sections")}
             >
@@ -482,7 +482,7 @@ export default function SuperAdminDashboard() {
               <span>Manage Sections</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-warning"
               onClick={() => navigate("/super-admin/posts")}
             >
@@ -490,7 +490,7 @@ export default function SuperAdminDashboard() {
               <span>View Posts</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-secondary"
               onClick={() => navigate("/super-admin/users")}
             >
@@ -498,7 +498,7 @@ export default function SuperAdminDashboard() {
               <span>Manage Users</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-secondary"
               onClick={() => navigate("/super-admin/categories")}
             >
@@ -506,7 +506,7 @@ export default function SuperAdminDashboard() {
               <span>Manage Categories</span>
             </button>
 
-            <button 
+            <button
               className="sad-action-btn sad-action-info"
               onClick={() => navigate("/super-admin/subscribe")}
             >
@@ -522,19 +522,19 @@ export default function SuperAdminDashboard() {
         <div className="sad-card-header">
           <h3 className="sad-card-title">Recent Activity</h3>
           <div className="sad-timeframe-selector">
-            <button 
+            <button
               className={`sad-timeframe-btn ${timeframe === 'week' ? 'active' : ''}`}
               onClick={() => handleTimeframeChange('week')}
             >
               Week
             </button>
-            <button 
+            <button
               className={`sad-timeframe-btn ${timeframe === 'month' ? 'active' : ''}`}
               onClick={() => handleTimeframeChange('month')}
             >
               Month
             </button>
-            <button 
+            <button
               className={`sad-timeframe-btn ${timeframe === 'year' ? 'active' : ''}`}
               onClick={() => handleTimeframeChange('year')}
             >
@@ -576,10 +576,10 @@ export default function SuperAdminDashboard() {
                   </div>
                 </div>
               ))}
-              
+
               {recentActivity.length > visibleCount && (
                 <div className="sad-view-more-container">
-                  <button 
+                  <button
                     className="sad-view-more-btn"
                     onClick={() => setVisibleCount(prev => prev + 8)}
                   >

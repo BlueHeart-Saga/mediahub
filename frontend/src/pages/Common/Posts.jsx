@@ -559,7 +559,7 @@ export default function Posts() {
         return res?.items || [];
       });
 
-      promiseTasks.stats = apiFetch(`/content/stats?${postsParams}`).then(res => {
+      promiseTasks.stats = apiFetch(`/content-stats?${postsParams}`).then(res => {
         if (res) {
           setStats({
             total: res.total || 0,

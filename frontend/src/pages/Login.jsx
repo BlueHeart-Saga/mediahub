@@ -98,56 +98,51 @@ export default function Login() {
 
         </div>
 
-        {/* Email */}
-        <div className="ph-login-field">
+        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+          {/* Email */}
+          <div className="ph-login-field">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              onKeyDown={handleKeyDown}
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          </div>
 
-          <label>Email</label>
+          {/* Password */}
+          <div className="ph-login-field">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              onKeyDown={handleKeyDown}
+              value={form.password}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+            />
+          </div>
 
-          <input
-            placeholder="Enter your email"
-            onKeyDown={handleKeyDown}
-            value={form.email}
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
-          />
-
-        </div>
-
-        {/* Password */}
-        <div className="ph-login-field">
-
-          <label>Password</label>
-
-          <input
-            type="password"
-            placeholder="Enter your password"
-            onKeyDown={handleKeyDown}
-            value={form.password}
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-          />
-
-        </div>
-
-        {/* Login Button */}
-        <button
-          className={`ph-login-btn ${loading ? "loading" : ""}`}
-          onClick={handleLogin}
-          disabled={loading}
-        >
-
-          {loading ? (
-            <>
-              <Loader2 size={16} className="spin" />
-              Logging in...
-            </>
-          ) : (
-            "Log In"
-          )}
-
-        </button>
+          {/* Login Button */}
+          <button
+            type="submit"
+            className={`ph-login-btn ${loading ? "loading" : ""}`}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 size={16} className="spin" />
+                Logging in...
+              </>
+            ) : (
+              "Log In"
+            )}
+          </button>
+        </form>
 
         {/* Footer */}
         <div className="ph-login-footer">

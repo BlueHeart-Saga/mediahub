@@ -76,9 +76,17 @@
   margin-bottom: 10px;
 }
 
-.ph-home-description div:nth-child(1) { width: 100%; }
-.ph-home-description div:nth-child(2) { width: 85%; }
-.ph-home-description div:nth-child(3) { width: 65%; }
+.ph-home-description div:nth-child(1) {
+  width: 100%;
+}
+
+.ph-home-description div:nth-child(2) {
+  width: 85%;
+}
+
+.ph-home-description div:nth-child(3) {
+  width: 65%;
+}
 
 /* Actions */
 

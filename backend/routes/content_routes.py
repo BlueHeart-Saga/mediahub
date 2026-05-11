@@ -2436,6 +2436,95 @@ async def create_content(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/content-stats")
+def get_content_stats(
+    user: dict = Depends(get_current_user),
+    company_id: str | None = None,
+    status: Optional[ContentStatus] = None,
+    section: Optional[str] = None,
+    category: Optional[str] = None,
+    tag: Optional[str] = None,
+    search: Optional[str] = None,
+    days: Optional[int] = Query(None),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None)
+):
+    """
+    Get aggregate stats for content based on filters
+    """
+    query = {}
+    
+    # Reuse timeframe/filter logic (abstracted for brevity here, but must match list_content)
+    if days:
+        query["created_at"] = {"$gte": datetime.utcnow() - timedelta(days=days)}
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+            query.setdefault("created_at", {})["$gte"] = start_dt
+        except: pass
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+            if len(end_date) <= 10: end_dt = end_dt.replace(hour=23, minute=59, second=59)
+            query.setdefault("created_at", {})["$lte"] = end_dt
+        except: pass
+
+    role = user.get("role")
+    if role == "super_admin":
+        if company_id and company_id.strip() != "":
+            query["company_id"] = company_id.strip()
+    else:
+        query["company_id"] = user.get("company_id")
+
+    if section: query["section.slug"] = section
+    if category: query["category.slug"] = category
+    if tag: query["tags"] = tag
+    if search:
+        query["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"subtitle": {"$regex": search, "$options": "i"}},
+            {"tags": {"$regex": search, "$options": "i"}}
+        ]
+
+    # Calculate status counts
+    total = content_collection.count_documents(query)
+    
+    # Specific status counts
+    published_query = {**query, "status": ContentStatus.PUBLISHED}
+    draft_query = {**query, "status": ContentStatus.DRAFT}
+    archived_query = {**query, "status": ContentStatus.ARCHIVED}
+    
+    published = content_collection.count_documents(published_query)
+    draft = content_collection.count_documents(draft_query)
+    archived = content_collection.count_documents(archived_query)
+
+    # Aggregate engagement stats
+    pipeline = [
+        {"$match": query},
+        {
+            "$group": {
+                "_id": None,
+                "total_views": {"$sum": {"$ifNull": ["$stats.views", 0]}},
+                "total_likes": {"$sum": {"$ifNull": ["$stats.likes", 0]}},
+                "total_comments": {"$sum": {"$ifNull": ["$stats.comments", 0]}}
+            }
+        }
+    ]
+    
+    agg_results = list(content_collection.aggregate(pipeline))
+    engagement = agg_results[0] if agg_results else {}
+
+    return {
+        "total": total,
+        "published": published,
+        "draft": draft,
+        "archived": archived,
+        "views": engagement.get("total_views", 0),
+        "likes": engagement.get("total_likes", 0),
+        "comments": engagement.get("total_comments", 0)
+    }
+
+
 @router.get("/content")
 def list_content(
     user: dict = Depends(get_current_user),
@@ -2563,94 +2652,6 @@ def list_content(
         "has_more": (skip + limit) < total
     }
 
-
-@router.get("/content/stats")
-def get_content_stats(
-    user: dict = Depends(get_current_user),
-    company_id: str | None = None,
-    status: Optional[ContentStatus] = None,
-    section: Optional[str] = None,
-    category: Optional[str] = None,
-    tag: Optional[str] = None,
-    search: Optional[str] = None,
-    days: Optional[int] = Query(None),
-    start_date: Optional[str] = Query(None),
-    end_date: Optional[str] = Query(None)
-):
-    """
-    Get aggregate stats for content based on filters
-    """
-    query = {}
-    
-    # Reuse timeframe/filter logic (abstracted for brevity here, but must match list_content)
-    if days:
-        query["created_at"] = {"$gte": datetime.utcnow() - timedelta(days=days)}
-    if start_date:
-        try:
-            start_dt = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
-            query.setdefault("created_at", {})["$gte"] = start_dt
-        except: pass
-    if end_date:
-        try:
-            end_dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
-            if len(end_date) <= 10: end_dt = end_dt.replace(hour=23, minute=59, second=59)
-            query.setdefault("created_at", {})["$lte"] = end_dt
-        except: pass
-
-    role = user.get("role")
-    if role == "super_admin":
-        if company_id and company_id.strip() != "":
-            query["company_id"] = company_id.strip()
-    else:
-        query["company_id"] = user.get("company_id")
-
-    if section: query["section.slug"] = section
-    if category: query["category.slug"] = category
-    if tag: query["tags"] = tag
-    if search:
-        query["$or"] = [
-            {"title": {"$regex": search, "$options": "i"}},
-            {"subtitle": {"$regex": search, "$options": "i"}},
-            {"tags": {"$regex": search, "$options": "i"}}
-        ]
-
-    # Calculate status counts
-    total = content_collection.count_documents(query)
-    
-    # Specific status counts
-    published_query = {**query, "status": ContentStatus.PUBLISHED}
-    draft_query = {**query, "status": ContentStatus.DRAFT}
-    archived_query = {**query, "status": ContentStatus.ARCHIVED}
-    
-    published = content_collection.count_documents(published_query)
-    draft = content_collection.count_documents(draft_query)
-    archived = content_collection.count_documents(archived_query)
-
-    # Aggregate engagement stats
-    pipeline = [
-        {"$match": query},
-        {
-            "$group": {
-                "_id": None,
-                "total_views": {"$sum": {"$ifNull": ["$stats.views", 0]}},
-                "total_likes": {"$sum": {"$ifNull": ["$stats.likes", 0]}},
-                "total_comments": {"$sum": {"$ifNull": ["$stats.comments", 0]}}
-            }
-        }
-    ]
-    
-    agg_results = list(content_collection.aggregate(pipeline))
-    engagement = agg_results[0] if agg_results else {}
-
-    return {
-        "total": total,
-        "published": published,
-        "draft": draft,
-        "archived": archived,
-        "views": engagement.get("total_views", 0),
-        "likes": engagement.get("total_likes", 0),
-        "comments": engagement.get("total_comments", 0)
-    }
 
 
 @router.get("/content/{content_id}")

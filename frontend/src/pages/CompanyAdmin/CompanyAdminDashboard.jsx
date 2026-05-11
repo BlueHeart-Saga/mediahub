@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../api/client";
 import toast from "react-hot-toast";
-import { 
-  UsersIcon, 
-  UserGroupIcon, 
+import {
+  UsersIcon,
+  UserGroupIcon,
   DocumentTextIcon,
   FolderIcon,
   TagIcon,
@@ -65,7 +65,7 @@ export default function CompanyAdminDashboard() {
   }, [timeframe]);
 
   const getStatusBadgeClass = (status) => {
-    switch(status) {
+    switch (status) {
       case 'published': return 'cad-status-published';
       case 'draft': return 'cad-status-draft';
       case 'archived': return 'cad-status-archived';
@@ -79,7 +79,7 @@ export default function CompanyAdminDashboard() {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return 'Today';
     } else if (diffDays === 1) {
@@ -360,19 +360,19 @@ export default function CompanyAdminDashboard() {
         <div className="cad-card-header">
           <h2 className="cad-card-title">Recent Activity</h2>
           <div className="cad-timeframe-selector">
-            <button 
+            <button
               className={`cad-timeframe-btn ${timeframe === 'week' ? 'active' : ''}`}
               onClick={() => setTimeframe('week')}
             >
               Week
             </button>
-            <button 
+            <button
               className={`cad-timeframe-btn ${timeframe === 'month' ? 'active' : ''}`}
               onClick={() => setTimeframe('month')}
             >
               Month
             </button>
-            <button 
+            <button
               className={`cad-timeframe-btn ${timeframe === 'year' ? 'active' : ''}`}
               onClick={() => setTimeframe('year')}
             >
@@ -424,9 +424,9 @@ export default function CompanyAdminDashboard() {
                   </div>
                 </div>
               ))}
-              
+
               {recentActivity.length > visibleCount && (
-                <button 
+                <button
                   className="cad-view-more-btn"
                   onClick={() => setVisibleCount(prev => prev + 8)}
                 >
